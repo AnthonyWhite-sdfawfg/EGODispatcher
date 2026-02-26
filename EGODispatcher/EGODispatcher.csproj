@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{C23E7FFC-C05D-41D0-A4B7-85779E264A36}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>EGODispatcher</RootNamespace>
+    <AssemblyName>EGODispatcher</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>Lib\Assembly-CSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="UnityEngine">
+      <HintPath>Lib\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>Lib\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Armors\ArmorLazyDog.cs" />
+    <Compile Include="Armors\ArmorUnified.cs" />
+    <Compile Include="Bufs\DebufDamageMultiply.cs" />
+    <Compile Include="Bufs\DebufDotDamage.cs" />
+    <Compile Include="Bufs\DebufSlowDown.cs" />
+    <Compile Include="Creature\EGODispatcher.cs" />
+    <Compile Include="Creature\EGODispatcherAnim.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\AgentList.cs" />
+    <Compile Include="Utils\ArmorConsts.cs" />
+    <Compile Include="Utils\ArmorMethods.cs" />
+    <Compile Include="Utils\ArmorStructs.cs" />
+    <Compile Include="Utils\WeaponStructs.cs" />
+    <Compile Include="Utils\CreatureConsts.cs" />
+    <Compile Include="Utils\CreatureMethods.cs" />
+    <Compile Include="Utils\WeaponMethods.cs" />
+    <Compile Include="Weapons\WeaponChainsaw.cs" />
+    <Compile Include="Weapons\WeaponLazyDog.cs" />
+    <Compile Include="Weapons\WeaponPistol.cs" />
+    <Compile Include="Weapons\WeaponRifle.cs" />
+    <Compile Include="Weapons\WeaponShotgun.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

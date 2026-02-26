@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using Bufs;
+using Utils;
+
+namespace Weapons
+{
+	public class WeaponPistol : EquipmentScriptBase
+	{
+		public override EquipmentScriptBase.WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
+		{
+			this.dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
+            this.DotDamageSettings4Pistol = new WeaponStructs.DebufDotDamageSettings(WeaponMethods.HasImmuneDefense(target), dmgType, 15f, 10f, 0.5f);
+            List<DamageInfo> list = new List<DamageInfo>();
+			for (int i = 0; i < 3; i++)
+			{
+				list.Add(base.model.metaInfo.damageInfos[0].Copy());
+			}
+			return new EquipmentScriptBase.WeaponDamageInfo(base.model.metaInfo.animationNames[0], list.ToArray());
+		}
+		public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
+		{
+			dmg.type = this.dmgType;
+            target.AddUnitBuf(new DebufSlowDown());
+
+            target.AddUnitBuf(new DebufDotDamage(DotDamageSettings4Pistol));
+
+			return base.OnGiveDamage(actor, target, ref dmg);
+		}
+		private RwbpType dmgType;
+        private WeaponStructs.DebufDotDamageSettings DotDamageSettings4Pistol;
+    }
+}
