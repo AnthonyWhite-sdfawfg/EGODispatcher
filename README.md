@@ -2,11 +2,16 @@
 
 # EGODispatcher
 
-Lobotomy Corporation 模组代码部分源码 - EGO 调度器
+Lobotomy Corporation 模组 - EGO 调度器
+
+## 说明
+
+**注意：此处为dll的源码，请编译后使用或直接下载dll文件。**
+
 
 ## 项目简介
 
-这是一个为《脑叶公司》(Lobotomy Corporation)开发的游戏模组的代码部分的源码。模组添加了一个名为 "EGODispatcher" 的敌人实体，以及一系列 EGO 武器和护甲装备。
+该模组是一个为《脑叶公司》(Lobotomy Corporation)开发的游戏模组。模组添加了一个名为 "EGODispatcher" 的敌人实体，以及一系列 EGO 武器和护甲装备。
 
 ## 项目结构
 
@@ -42,22 +47,17 @@ EGODispatcher/
 ## 主要功能
 
 ### EGO 调度器 (EGODispatcher)
-
 ### 武器系统
-
 ### 护甲系统
-
 ### Buff/Debuff 系统
+
+因为篇幅原因无法在此详细说明，详见说明书.md（正在编纂）
 
 ## 技术栈
 
 - **语言**: C#
 - **框架**: Unity (游戏模组)
 - **IDE**: Visual Studio
-
-## 说明
-
-此处为dll的源码，请编译后使用或直接下载dll文件。
 
 ## 使用说明
 
