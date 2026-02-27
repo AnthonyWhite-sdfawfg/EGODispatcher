@@ -8,6 +8,17 @@ Lobotomy Corporation 模组代码部分源码 - EGO 调度器
 
 这是一个为《脑叶公司》(Lobotomy Corporation)开发的游戏模组的代码部分的源码。模组添加了一个名为 "EGODispatcher" 的敌人实体，以及一系列 EGO 武器和护甲装备。
 
+##内容：
+
+异想体EGODispatcher；
+2种护甲；
+n种武器：
+- Pistol
+- Shotgun
+- Rifle
+- Chainsaw
+- Recoilless gun(soon)
+
 ## 技术栈
 
 - **语言**: C#
