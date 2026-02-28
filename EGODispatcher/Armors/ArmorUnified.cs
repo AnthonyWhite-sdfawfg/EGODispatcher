@@ -10,7 +10,7 @@ namespace Armors
     public class ArmorUnified : EquipmentScriptBase
     {
         //初始化，启动计时器
-        public override void OnStageStart()//startTimer(time)
+        public override void OnStageStart()
         {
             base.OnStageStart();
             this.owner = base.model.owner;
@@ -20,7 +20,7 @@ namespace Armors
         }
 
         //每个计时器周期的动作
-        public override void OnFixedUpdate()//CheckTimer&StartTimer
+        public override void OnFixedUpdate()
         {
             base.OnFixedUpdate();
             //判断所处职位
@@ -78,7 +78,7 @@ namespace Armors
         {
             if (ArmorMethods.ShouldAddBarrier(actor))
             {
-                actor.AddUnitBuf(CreatePrepareBarrier());
+                actor.AddUnitBuf(new BarrierBuf(RwbpType.A, ArmorConsts.BARRIER_ON_PREPARE_VALUE, ArmorConsts.BARRIER_ON_PREPARE_DURATION));
             }
             actor.AddUnitBuf(CreateSpeedBuf());
             base.OnPrepareWeapon(actor);
@@ -90,7 +90,7 @@ namespace Armors
             if (owner == null) return false;
             if (ArmorMethods.ShouldAddBarrier(actor))
             {
-                actor.AddUnitBuf(CreateHitBarrier());
+                actor.AddUnitBuf(new BarrierBuf(RwbpType.A, ArmorConsts.BARRIER_ON_HIT_VALUE, ArmorConsts.BARRIER_ON_HIT_DURATION));
                 return false;
             }
             return base.OnTakeDamage(actor, ref dmg);
@@ -105,16 +105,6 @@ namespace Armors
         }
 
         //独立创建buf
-        private BarrierBuf CreatePrepareBarrier()
-        {
-            return new BarrierBuf(RwbpType.A, ArmorConsts.BARRIER_ON_PREPARE_VALUE, ArmorConsts.BARRIER_ON_PREPARE_DURATION);
-        }
-
-        private BarrierBuf CreateHitBarrier()
-        {
-            return new BarrierBuf(RwbpType.A, ArmorConsts.BARRIER_ON_HIT_VALUE, ArmorConsts.BARRIER_ON_HIT_DURATION);
-        }
-
         private UnitStatBuf CreateSpeedBuf()
         {
             return new UnitStatBuf(ArmorConsts.SPEED_BUF_DURATION, UnitBufType.ADD_SUPERARMOR)
@@ -128,7 +118,7 @@ namespace Armors
         private float timerInterval;
         private float hpMark;
         private float mpMark;
-        private readonly Timer HealTimer = new Timer();//DefineTimer
+        private readonly Timer HealTimer = new Timer();
         private WorkerModel worker;
         private UnitModel owner;
         private ArmorStructs.CombatMode currentMode;

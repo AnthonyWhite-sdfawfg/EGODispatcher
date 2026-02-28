@@ -7,7 +7,6 @@ namespace Creature
 {
 	public class EGODispatcher : CreatureBase, IObserver
 	{
-        //也不知道干啥子用……
 		public override void OnViewInit(CreatureUnit unit)
 		{
 			base.OnViewInit(unit);
@@ -96,8 +95,6 @@ namespace Creature
             this.Timer.StartTimer(1f);
         }
 
-        //以下为私有方法
-
         //[通用]OnStageStart()最后延时协程，保证SystemLog出现
         private IEnumerator DelaySetting4Log()
         {
@@ -114,6 +111,9 @@ namespace Creature
         }
 
         //[移除感染]移除感染协程计数外壳：只做「+1 / -1」& 启动
+        //计数是确保同一时间最多只有一个 RemoveInfectionShell 协程在运行，
+        //避免多个协程并发执行 RemoveInfection 操作可能导致的资源竞争或状态混乱。
+        //虽然timer已经是以1s为单位运作，但是这样避免了后续协程运行时长超出1s出现的问题。
         private IEnumerator RemoveInfectionShell(int batch)
         {
             _infectionCounter++;
@@ -128,7 +128,6 @@ namespace Creature
             }
         }
 
-        //以下为字段
         public EGODispatcherAnim animscript;
         private readonly Timer Timer = new Timer();
         private int _infectionCounter = 0;
