@@ -4,14 +4,10 @@ namespace Utils
 {
     public static class ArmorMethods
     {
-        public static bool ShouldAddBarrier(UnitModel model, bool battleFlag)
-        {
-            WorkerModel workerModel = model as WorkerModel;
-            return workerModel != null && !workerModel.IsPanic() && !model.HasUnitBuf(UnitBufType.BARRIER_ALL) && battleFlag;
-        }
         public static bool ShouldAddBarrier(UnitModel model)
         {
-            return ArmorMethods.ShouldAddBarrier(model, true);
+            WorkerModel workerModel = model as WorkerModel;
+            return workerModel != null && !workerModel.IsPanic() && !model.HasUnitBuf(UnitBufType.BARRIER_ALL);
         }
         public static bool IsNormal(WorkerModel worker)
         {
