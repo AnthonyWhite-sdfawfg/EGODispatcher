@@ -80,15 +80,15 @@ namespace Creature
             }
         }
 
-        //以1秒为单位运作
+        
         public override void OnFixedUpdate(CreatureModel creature)
         {
             base.OnFixedUpdate(creature);
-            if (!Timer.started || !Timer.RunTimer())
+            if (!Timer.started || !Timer.RunTimer())//此处开始之后的代码段均以1秒为单位运作
             {
                 return;
             }
-            if (_infectionCounter == 0)//每秒检测一次移除感染协程是否正在运行，如果未运行则激活
+            if (_infectionCounter == 0)//检测移除感染协程是否正在运行，如果未运行则激活
             {
                 this.animscript.StartCoroutine(RemoveInfectionShell(5));
             }
