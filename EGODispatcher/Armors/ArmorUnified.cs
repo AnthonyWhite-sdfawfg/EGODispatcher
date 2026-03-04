@@ -9,33 +9,33 @@ namespace Armors
     /// </summary>
     public class ArmorUnified : EquipmentScriptBase
     {
-        //初始化，启动计时器
+        // 初始化，启动计时器
         public override void OnStageStart()
         {
             base.OnStageStart();
             this.owner = base.model.owner;
             this.worker = this.owner as WorkerModel;
             this.currentMode = ArmorStructs.CombatMode.None;
-            this.RestoreCombatParams(this.worker);//取参
+            this.RestoreCombatParams(this.worker);// 取参
         }
 
-        //每个计时器周期的动作
+        // 每个计时器周期的动作
         public override void OnFixedUpdate()
         {
             base.OnFixedUpdate();
-            //判断所处职位
+            // 判断所处职位
             ArmorStructs.CombatMode combatMode = ArmorMethods.ResolveCombatMode(this.worker);
             if (combatMode != this.currentMode)
             {
                 this.currentMode = combatMode;
                 this.RestoreCombatParams(this.worker);
             }
-            //从此处开始为计时器周期
+            // 从此处开始为计时器周期
             if (!this.HealTimer.started || !this.HealTimer.RunTimer())
             {
                 return;
             }
-            //依据所处职位，取恢复ratio并进行恢复（如若需要恢复的话）
+            // 依据所处职位，取恢复 ratio 并进行恢复（如若需要恢复的话）
             float ratio;
             float ratio2;
             ArmorStructs.CombatParams combatParams = ArmorStructs.ModeToValues[this.currentMode];
@@ -54,12 +54,12 @@ namespace Armors
             this.HealTimer.StartTimer(this.timerInterval);
         }
 
-        //生命与精神值降低至阈值时修改抗性
+        // 实时取抗性，生命与精神值降低至阈值时修改
         public override DefenseInfo GetDefense(UnitModel actor)
         {
-            DefenseInfo defenseInfo = base.GetDefense(actor).Copy();//取角色抗性
-            this.hpMark = (float)actor.maxHp * ArmorConsts.DEFENSE_MARK_RATIO;//计算阈值
-            this.mpMark = (float)actor.maxMental * ArmorConsts.DEFENSE_MARK_RATIO;//计算阈值
+            DefenseInfo defenseInfo = base.GetDefense(actor).Copy();
+            this.hpMark = (float)actor.maxHp * ArmorConsts.DEFENSE_MARK_RATIO;
+            this.mpMark = (float)actor.maxMental * ArmorConsts.DEFENSE_MARK_RATIO;
             if (actor.hp < this.hpMark)
             {
                 defenseInfo.R = 0f;
@@ -73,7 +73,6 @@ namespace Armors
             return defenseInfo;
         }
 
-        //参战时动作
         public override void OnPrepareWeapon(UnitModel actor)
         {
             if (ArmorMethods.ShouldAddBarrier(actor))
@@ -84,7 +83,6 @@ namespace Armors
             base.OnPrepareWeapon(actor);
         }
 
-        //受到伤害时动作
         public override bool OnTakeDamage(UnitModel actor, ref DamageInfo dmg)
         {
             if (owner == null) return false;
@@ -96,7 +94,6 @@ namespace Armors
             return base.OnTakeDamage(actor, ref dmg);
         }
 
-        //取参数
         private void RestoreCombatParams(WorkerModel worker)
         {
             this.currentMode = ArmorMethods.ResolveCombatMode(worker);
@@ -104,7 +101,6 @@ namespace Armors
             this.HealTimer.StartTimer(this.timerInterval);
         }
 
-        //独立创建buf
         private UnitStatBuf CreateSpeedBuf()
         {
             return new UnitStatBuf(ArmorConsts.SPEED_BUF_DURATION, UnitBufType.ADD_SUPERARMOR)

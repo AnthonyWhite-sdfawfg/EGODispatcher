@@ -38,7 +38,6 @@ namespace Weapons
 			{
 				dmg.type = this.dmgType;
 			}
-			target.AddUnitBuf(new DebufDamageMultiply(true));
 			return base.OnGiveDamage(actor, target, ref dmg);
 		}
 		private bool dmgFlag;

@@ -21,10 +21,6 @@ namespace Weapons
 		public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
 		{
 			dmg.type = this.dmgType;
-            target.AddUnitBuf(new DebufSlowDown());
-
-            target.AddUnitBuf(new DebufDotDamage(DotDamageSettings4Pistol));
-
 			return base.OnGiveDamage(actor, target, ref dmg);
 		}
 		private RwbpType dmgType;
