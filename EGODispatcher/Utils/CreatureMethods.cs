@@ -8,7 +8,7 @@ namespace Utils
 {
     public static class CreatureMethods
 	{
-        //[ExoSuit]迭代器，生成所有EXOSuit装备
+        // [ExoSuit]迭代器，生成所有EXOSuit装备
 		public static IEnumerator SpawnEquipmentsToInventory(Dictionary<int, int> plan)
 		{
 			InventoryModel inv = InventoryModel.Instance;
@@ -35,7 +35,7 @@ namespace Utils
 			yield break;
 		}
 
-        //[ExoSuit]迭代器，遍历员工list，依照装备的武器分发对应的Attachment套装
+        // [ExoSuit]迭代器，遍历自建的员工list，依照装备的武器分发对应的Attachment套装
         public static IEnumerator DistributeGiftsToAllAgents()
         {
             // 创建快照
@@ -48,7 +48,7 @@ namespace Utils
                 if (ag == null || ag.IsDead())      // 二次排除已死亡员工
                     continue;
 
-                int[] giftIds = getList(ag);
+                int[] giftIds = ResolveID(ag);
                 for (int j = 0; j < giftIds.Length; j++)
                 {
                     EGOgiftModel gift = EGOgiftModel.MakeGift(EquipmentTypeList.instance.GetData(giftIds[j]));
@@ -57,12 +57,11 @@ namespace Utils
 
                 yield return new WaitForEndOfFrame();
             }
-            // 清空快照，等待GC销毁
             snapshot.Clear();
         }
 
-        //[ExoSuit]取list，与Armor体系同样解析ID
-        public static int[] getList(AgentModel ag)
+        // [ExoSuit]与Armor体系同样的解析ID
+        public static int[] ResolveID(AgentModel ag)
 		{
 			switch (EquipmentTypeInfo.GetLcId(ag.Equipment.weapon.metaInfo).id / ArmorConsts.ID_DIGIT % 10)
 			{

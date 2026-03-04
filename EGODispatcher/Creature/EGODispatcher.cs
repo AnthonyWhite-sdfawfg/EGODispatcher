@@ -110,10 +110,14 @@ namespace Creature
             yield break;
         }
 
-        // [移除感染]移除感染协程计数外壳：只做「+1 / -1」& 启动
-        // 计数是确保同一时间最多只有一个 RemoveInfectionShell 协程在运行，
-        // 避免多个协程并发执行 RemoveInfection 操作可能导致的资源竞争或状态混乱。
-        // 虽然timer已经是以1s为单位运作，但是这样避免了后续 RemoveInfection 运行时长超出1s出现的问题。
+
+        /// <summary>
+        /// [移除感染]移除感染协程计数外壳：只做「+1 / -1」& 启动
+        /// 计数是确保同一时间最多只有一个 RemoveInfectionShell 协程在运行，
+        /// 避免多个协程并发执行 RemoveInfection 操作从而出现冲突。
+        /// 虽然timer已经是以1s为单位运作，但是这样避免了后续 RemoveInfection 运行时长超出1s出现的问题。
+        /// </summary>
+        /// <param name="batch">内部协程一个批次处理的人数</param>
         private IEnumerator RemoveInfectionShell(int batch)
         {
             _infectionCounter++;
