@@ -11,7 +11,7 @@ namespace Bufs
         /// </summary>
 
         /// <param name="remainTime">该buf的持续时间，单位为秒</param>
-        /// <param name="MovementScale">该buf的减速效果，取值范围0-1，0.3表示30%</param>
+        /// <param name="movementScale">该buf的减速效果，取值范围0-1，0.3表示30%</param>
         public DebufSlowDown(float remainTime = 1f, float movementScale = 0.3f)
 		{
 			this.remainTime = remainTime;
