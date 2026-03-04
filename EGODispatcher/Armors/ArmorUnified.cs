@@ -36,20 +36,20 @@ namespace Armors
                 return;
             }
             // 依据所处职位，取恢复 ratio 并进行恢复（如若需要恢复的话）
-            float ratio;
-            float ratio2;
+            float ratioHP;
+            float ratioMental;
             ArmorStructs.CombatParams combatParams = ArmorStructs.ModeToValues[this.currentMode];
             if (this.worker.IsPanic())
             {
-                ratio = combatParams.HpPanic;
-                ratio2 = combatParams.MpPanic;
+                ratioHP = combatParams.HpPanic;
+                ratioMental = combatParams.MpPanic;
             }
             else
             {
-                ratio = combatParams.HpNormal;
-                ratio2 = combatParams.MpNormal;
+                ratioHP = combatParams.HpNormal;
+                ratioMental = combatParams.MpNormal;
             }
-            ArmorMethods.HealThisWorker(this.worker, ratio, ratio2);
+            ArmorMethods.HealThisWorker(this.worker, ratioHP, ratioMental);
             EnergyModel.instance.AddEnergy(1f);
             this.HealTimer.StartTimer(this.timerInterval);
         }

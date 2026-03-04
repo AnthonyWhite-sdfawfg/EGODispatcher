@@ -31,7 +31,7 @@ namespace Utils
 			{
 				num = 3;
 			}
-			return num + 1;
+			return num + 1; //因为游戏源码中R、W、B、P对应的枚举值为1-4而不是0-3，故+1修正
 		}
 		public static bool HasImmuneDefense(UnitModel target)
 		{

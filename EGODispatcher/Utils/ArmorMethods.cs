@@ -13,12 +13,12 @@ namespace Utils
         {
             return worker != null && !worker.IsDead() && worker.GetMovableNode().currentPassage != null && !worker.IsPanic() && worker.unconAction == null && !worker.CannotControll();
         }
-        public static void HealThisWorker(WorkerModel worker, float ratio1, float ratio2)
+        public static void HealThisWorker(WorkerModel worker, float ratioHP, float ratioMental)
         {
             if (worker != null && !worker.IsDead())
             {
-                float num = (float)worker.maxHp * ratio1;
-                float num2 = (float)worker.maxMental * ratio2;
+                float num = (float)worker.maxHp * ratioHP;
+                float num2 = (float)worker.maxMental * ratioMental;
                 if (worker.hp < (float)worker.maxHp)
                 {
                     worker.RecoverHP(num);

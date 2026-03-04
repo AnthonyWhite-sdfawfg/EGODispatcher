@@ -26,9 +26,14 @@ namespace Utils
 		};
 		public struct CombatParams
 		{
+            /// <param name="timerInterval">恢复的时间间隔，单位为秒</param>
+            /// <param name="hpNormal">正常状态下的生命恢复比率，范围为0-1，0.1对应着总生命值的10%</param>
+            /// <param name="mpNormal">正常状态下的精神恢复比率，范围为0-1，0.1对应着总精神值的10%</param>
+            /// <param name="hpPanic">恐慌状态下的生命恢复比率，范围为0-1，0.1对应着总生命值的10%</param>
+            /// <param name="mpPanic">恐慌状态下的精神恢复比率，范围为0-1，0.1对应着总精神值的10%</param>
 			public CombatParams(float timerInterval, float hpNormal, float mpNormal, float hpPanic, float mpPanic)
 			{
-				this.TimerInterval = timerInterval;//单位为秒，下面四条单位均为血量/精神的比值（0-1为0%-100%）
+				this.TimerInterval = timerInterval;
 				this.HpNormal = hpNormal;
 				this.MpNormal = mpNormal;
 				this.HpPanic = hpPanic;
@@ -40,7 +45,7 @@ namespace Utils
 			public readonly float HpPanic;
 			public readonly float MpPanic;
 		}
-		public enum CombatMode
+        public enum CombatMode
 		{
 			None,
 			Operative,
