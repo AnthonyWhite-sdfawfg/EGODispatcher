@@ -42,10 +42,9 @@ namespace Utils
             List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
 
             // 遍历快照
-            for (int i = 0; i < snapshot.Count; i++)
+            foreach (AgentModel ag in snapshot)
             {
-                AgentModel ag = snapshot[i];
-                if (ag == null || ag.IsDead())      // 二次排除已死亡员工
+                if (ag == null || ag.IsDead())    // 二次排除已死亡员工
                     continue;
 
                 int[] giftIds = ResolveID(ag);
@@ -57,7 +56,6 @@ namespace Utils
 
                 yield return new WaitForEndOfFrame();
             }
-            snapshot.Clear();
         }
 
         // [ExoSuit]与Armor体系同样的解析ID
@@ -76,7 +74,7 @@ namespace Utils
 			}
 		}
 
-        //[移除感染]核心方法
+        // [移除感染]核心方法
         public static void RemoveInfection(AgentModel agent)
         {
             if (agent == null) return;
@@ -92,7 +90,7 @@ namespace Utils
             }
         }
 
-        //[移除感染]迭代器，以输入值为一组进行扫描并处理
+        // [移除感染]迭代器，以输入值为一组进行扫描并处理
         public static IEnumerator RemoveInfection(int batch)
         {
             List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
@@ -104,14 +102,15 @@ namespace Utils
                 for (int j = i; j < end; j++)
                 {
                     AgentModel ag = snapshot[j];
-                    if (ag == null || ag.IsDead()) continue;
+                    if (ag == null || ag.IsDead()) continue;    // 二次排除已死亡员工
                     CreatureMethods.RemoveInfection(ag);
                 }
+
                 yield return null;
             }
         }
 
-        //[通用]取今日类型
+        // [通用]取今日类型
         public static CreatureConsts.DayType GetTodayType()
         {
             var mgr = SefiraBossManager.Instance;
@@ -132,7 +131,7 @@ namespace Utils
             return CreatureConsts.DayType.NONE;
         }
 
-        //[Netzach]解锁恢复机制
+        // [Netzach]解锁恢复机制
         public static void TryUnlockRecover(CreatureConsts.DayType TodayType)
         {
             var mgr = SefiraBossManager.Instance;
@@ -144,7 +143,7 @@ namespace Utils
             }
         }
 
-        //[Malkuth]取Malkuth打乱的工作映射
+        // [Malkuth]取Malkuth打乱的工作映射
         public static int[] GetWorkMap()
         {
             var mgr = SefiraBossManager.Instance;
@@ -154,7 +153,7 @@ namespace Utils
             return map;
         }
 
-        //[malkuth]在systemLog中显示工作映射
+        // [Malkuth]在systemLog中显示工作映射
         public static void LogWorkMap()
         {
             int[] map = GetWorkMap();
@@ -166,10 +165,10 @@ namespace Utils
             Notice.instance.Send(NoticeName.AddSystemLog, new object[] { sb.ToString() });
         }
 
-        //[Yesod]主方法，销毁主Camera和UI Camera的像素化滤镜
+        // [Yesod]核心方法，销毁主Camera和UI Camera的像素化滤镜
         public static void ClearYesodFilters()
         {
-            // 清除主 Camera
+            // 销毁主 Camera
             Camera mainCam = Camera.main;
             if (mainCam)
             {
@@ -180,7 +179,7 @@ namespace Utils
                     Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 已销毁主Camera的像素化滤镜组件" });
                 }
             }
-            // 清除 UI Camera
+            // 销毁 UI Camera
             Camera uiCam = UIActivateManager.instance?.GetCam();
             if (uiCam)
             {
@@ -193,7 +192,7 @@ namespace Utils
             }
         }
 
-        //[Yesod]延迟迭代器，延迟1秒运行
+        // [Yesod]迭代器外壳，延迟运行
         public static IEnumerator ClearPixelDelayed()
         {
             yield return new WaitForSeconds(0.5f);
