@@ -62,6 +62,7 @@
     <Compile Include="Utils\CreatureConsts.cs" />
     <Compile Include="Utils\CreatureMethods.cs" />
     <Compile Include="Utils\WeaponMethods.cs" />
+    <Compile Include="Weapons\WeaponCannon.cs" />
     <Compile Include="Weapons\WeaponChainsaw.cs" />
     <Compile Include="Weapons\WeaponLazyDog.cs" />
     <Compile Include="Weapons\WeaponPistol.cs" />
