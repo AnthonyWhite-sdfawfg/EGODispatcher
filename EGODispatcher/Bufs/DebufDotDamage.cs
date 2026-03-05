@@ -8,7 +8,7 @@ namespace Bufs
 		public override void Init(UnitModel model)
 		{
 			base.Init(model);
-			this.remainTime = _remainTime;
+			this.remainTime = _totalDuration;
 		}
 		public override void FixedUpdate()
 		{
@@ -19,21 +19,21 @@ namespace Bufs
 			}
 			if (this.tickTimer.RunTimer())
 			{
-				if (_needSpecificDamageType)
+				if (_overrideDamageType)
 				{
 					for (int j = 0; j < 4; j++)
 					{
-						this.model.TakeDamage(new DamageInfo(this._dmgType, _dmgValue));
+						this.model.TakeDamage(new DamageInfo(this._damageType, _tickDamage));
 					}
 				}
 				else
 				{
-					this.model.TakeDamage(new DamageInfo(RwbpType.R, _dmgValue));
-					this.model.TakeDamage(new DamageInfo(RwbpType.W, _dmgValue));
-					this.model.TakeDamage(new DamageInfo(RwbpType.B, _dmgValue));
-					this.model.TakeDamage(new DamageInfo(RwbpType.P, _dmgValue));
+					this.model.TakeDamage(new DamageInfo(RwbpType.R, _tickDamage));
+					this.model.TakeDamage(new DamageInfo(RwbpType.W, _tickDamage));
+					this.model.TakeDamage(new DamageInfo(RwbpType.B, _tickDamage));
+					this.model.TakeDamage(new DamageInfo(RwbpType.P, _tickDamage));
 				}
-				this.tickTimer.StartTimer(_timeInterval);
+				this.tickTimer.StartTimer(_tickRate);
 			}
 		}
 		public override void OnUnitDie()
@@ -41,25 +41,25 @@ namespace Bufs
 			base.OnUnitDie();
 			this.Destroy();
 		}
-        public DebufDotDamage(WeaponStructs.DebufDotDamageSettings settings)
+        public DebufDotDamage(WeaponStructs.DotConfig config)
 		{
-            this._needSpecificDamageType = settings.needSpecificDamageType;
-            this._remainTime = settings.remainTime;
-            this._timeInterval = settings.timeInterval;
-            this._dmgType = settings.dmgType;
-            this._dmgValue = settings.dmgValue;
+            this._overrideDamageType = config.overrideDamageType;
+            this._totalDuration = config.totalDuration;
+            this._tickRate = config.tickRate;
+            this._damageType = config.damageType;
+            this._tickDamage = config.tickDamage;
 
-            this.tickTimer.StartTimer(_timeInterval);
+            this.tickTimer.StartTimer(_tickRate);
 			this.duplicateType = BufDuplicateType.ONLY_ONE;
 			this.type = UnitBufType.ADD_SUPERARMOR;
 
 		}
 		private Timer tickTimer = new Timer();
-        private bool _needSpecificDamageType;
-        private float _remainTime;
-        private float _dmgValue;
-        private float _timeInterval;
-        private RwbpType _dmgType;
+        private bool _overrideDamageType;
+        private float _totalDuration;
+        private float _tickDamage;
+        private float _tickRate;
+        private RwbpType _damageType;
 
 
 	}

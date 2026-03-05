@@ -4,29 +4,29 @@ namespace Utils
 {
     public static class WeaponStructs
     {
-        public struct DebufDotDamageSettings{
-            /// <param name="needSpecificDamageType">是否需要指定伤害类型</param>
-            /// <param name="dmgType">伤害类型（如需要）</param>
-            /// <param name="remainTime">该buf的持续时间，单位为秒</param>
-            /// <param name="dmgValue">每次伤害的伤害值</param>
-            /// <param name="timeInterval">每次伤害的间隔时间，单位为秒</param>
-            public DebufDotDamageSettings(bool needSpecificDamageType = false,
-                RwbpType dmgType = RwbpType.R,
-                float remainTime = 10f,
-                float dmgValue = 20f,
-                float timeInterval = 0.1f
+        public struct DotConfig{
+            /// <param name="overrideDamageType">是否需要指定伤害类型</param>
+            /// <param name="damageType">伤害类型（如需要）</param>
+            /// <param name="totalDuration">该buf的持续时间，浮点数，单位为秒</param>
+            /// <param name="tickDamage">每次伤害的伤害值，浮点数</param>
+            /// <param name="tickRate">每次伤害的间隔时间，浮点数，单位为秒</param>
+            public DotConfig(bool overrideDamageType = false,
+                RwbpType damageType = RwbpType.R,
+                float totalDuration = 10f,
+                float tickDamage = 20f,
+                float tickRate = 0.1f
                 ) {
-                this.needSpecificDamageType = needSpecificDamageType;
-                this.dmgType = dmgType;
-                this.remainTime = remainTime;
-                this.dmgValue = dmgValue;
-                this.timeInterval = timeInterval;
+                this.overrideDamageType = overrideDamageType;
+                this.damageType = damageType;
+                this.totalDuration = totalDuration;
+                this.tickDamage = tickDamage;
+                this.tickRate = tickRate;
             }
-            public float remainTime;
-            public float dmgValue;
-            public float timeInterval;
-            public RwbpType dmgType;
-            public bool needSpecificDamageType;
+            public float totalDuration;
+            public float tickDamage;
+            public float tickRate;
+            public RwbpType damageType;
+            public bool overrideDamageType;
         }
     }
 }
