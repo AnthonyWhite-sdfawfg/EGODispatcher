@@ -22,6 +22,7 @@ namespace Weapons
             dmg.type = this.dmgType;
             return base.OnGiveDamage(actor, target, ref dmg);
         }
+
         private RwbpType dmgType;
 	}
 }

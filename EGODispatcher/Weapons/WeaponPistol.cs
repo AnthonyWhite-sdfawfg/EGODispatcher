@@ -17,11 +17,24 @@ namespace Weapons
 			}
 			return new EquipmentScriptBase.WeaponDamageInfo(base.model.metaInfo.animationNames[0], list.ToArray());
 		}
-		public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
-		{
-			dmg.type = this.dmgType;
-			return base.OnGiveDamage(actor, target, ref dmg);
-		}
-		private RwbpType dmgType;
+        public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
+        {
+            dmg.type = this.dmgType;
+            target.TakeDamage(dmg);
+            target.TakeDamage(dmg);
+            target.TakeDamage(dmg);
+            return base.OnGiveDamage(actor, target, ref dmg);
+        }
+
+        public override void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg)
+        {
+            if (target.hp > 0f)
+            {
+                target.AddUnitBuf(new DebufSlowDown(5f, 0.1f));
+                target.AddUnitBuf(new DebufDamageMultiply(false));
+            }
+            base.OnGiveDamageAfter(actor, target, dmg);
+        }
+        private RwbpType dmgType;
     }
 }
