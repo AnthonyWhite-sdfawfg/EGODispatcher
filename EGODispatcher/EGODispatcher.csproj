@@ -46,7 +46,6 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Armors\ArmorLazyDog.cs" />
     <Compile Include="Armors\ArmorUnified.cs" />
     <Compile Include="Bufs\DebufDamageMultiply.cs" />
     <Compile Include="Bufs\DebufDotDamage.cs" />
@@ -64,7 +63,6 @@
     <Compile Include="Utils\WeaponMethods.cs" />
     <Compile Include="Weapons\WeaponCannon.cs" />
     <Compile Include="Weapons\WeaponChainsaw.cs" />
-    <Compile Include="Weapons\WeaponLazyDog.cs" />
     <Compile Include="Weapons\WeaponPistol.cs" />
     <Compile Include="Weapons\WeaponRifle.cs" />
     <Compile Include="Weapons\WeaponShotgun.cs" />
