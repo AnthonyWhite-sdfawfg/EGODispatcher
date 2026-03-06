@@ -23,6 +23,5 @@ namespace Weapons
 			return base.OnGiveDamage(actor, target, ref dmg);
 		}
 		private RwbpType dmgType;
-        private WeaponStructs.DotConfig DotDamageSettings4Pistol;
     }
 }

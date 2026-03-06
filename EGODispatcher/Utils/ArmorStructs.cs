@@ -22,7 +22,11 @@ namespace Utils
 			{
 				ArmorStructs.CombatMode.None,
 				new ArmorStructs.CombatParams(1f, 0.1f, 0.1f, 0.2f, 0.2f)
-			}
+			},
+            {
+                ArmorStructs.CombatMode.Prototype,
+                new ArmorStructs.CombatParams(0.5f, 0.2f, 0.2f, 0.5f, 0.5f)
+            }
 		};
 		public struct CombatParams
 		{
@@ -51,6 +55,7 @@ namespace Utils
 			Operative,
 			Worker,
 			KeterCrewMember,
+            Prototype
 		}
 	}
 }

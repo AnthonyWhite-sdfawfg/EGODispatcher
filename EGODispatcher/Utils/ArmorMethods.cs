@@ -51,6 +51,8 @@ namespace Utils
                     return ArmorStructs.CombatMode.Operative;
                 case 3:
                     return ArmorStructs.CombatMode.KeterCrewMember;
+                case 4:
+                    return ArmorStructs.CombatMode.Prototype;
                 default:
                     return ArmorStructs.CombatMode.None;
             }

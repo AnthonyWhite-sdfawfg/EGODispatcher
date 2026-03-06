@@ -34,11 +34,11 @@ namespace Creature
 			base.OnFinishWork(skill);
             CreatureMethods.TryUnlockRecover(_todayType);
             AgentModel agent = skill.agent;
-			if (agent.HasEquipment(81400))// 如若穿着LazyDog护甲，则分发装备
+			if (agent.HasEquipment(83400))// 如若配备原型武器，则分发装备
 			{
 				animscript.StartCoroutine(CreatureMethods.SpawnEquipmentsToInventory(CreatureConsts.EquipmentPlan));
 			}
-			if (agent.HasEquipment(81211))// 如若穿着EXOSuit的特定批次(可以从描述中得知)，则分发饰品
+			if (agent.HasEquipment(83211))// 如若配备步枪的特定批次(可以从描述中得知)，则分发饰品
 			{
 				animscript.StartCoroutine(CreatureMethods.DistributeGiftsToAllAgents());
 			}

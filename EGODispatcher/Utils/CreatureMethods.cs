@@ -69,7 +69,9 @@ namespace Utils
 				return CreatureConsts.GiftOperative;
 			case 3:
 				return CreatureConsts.GiftKeterCrewMember;
-			default:
+            case 4:
+                return CreatureConsts.GiftKeterCrewMember;
+            default:
 				return CreatureConsts.GiftDefault;
 			}
 		}
