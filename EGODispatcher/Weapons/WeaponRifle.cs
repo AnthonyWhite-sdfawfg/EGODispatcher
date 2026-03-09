@@ -22,6 +22,11 @@ namespace Weapons
             dmg.type = this.dmgType;
             return base.OnGiveDamage(actor, target, ref dmg);
         }
+        public override void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg)
+        {
+            target.AddUnitBuf(new DebufDamageMultiply(false, 2f));
+            base.OnGiveDamageAfter(actor, target, dmg);
+        }
 
         private RwbpType dmgType;
 	}

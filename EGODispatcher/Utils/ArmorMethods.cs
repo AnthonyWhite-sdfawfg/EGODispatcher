@@ -35,7 +35,7 @@ namespace Utils
         }
         public static bool IsHostile(UnitModel target, UnitModel owner, WorkerModel worker)
         {
-            return target != null && owner != null && target.hp > 0f && target.IsAttackTargetable() && target != owner && (owner.IsHostile(target) || (worker != null && worker.IsPanic()) || target is CreatureModel);
+            return target != null && owner != null && target.IsAttackTargetable() && target != owner && (owner.IsHostile(target) || (worker != null && worker.IsPanic()) || target is CreatureModel);
         }
         public static ArmorStructs.CombatMode ResolveCombatMode(WorkerModel worker)
         {
@@ -66,10 +66,6 @@ namespace Utils
                     return false;
             }
             return true;
-        }
-        public static float GetCombatTimerInterval( ArmorStructs.CombatMode mode)
-        {
-            return ArmorStructs.ModeToValues[mode].TimerInterval;
         }
     }
 }

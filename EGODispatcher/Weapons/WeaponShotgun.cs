@@ -9,7 +9,6 @@ namespace Weapons
 		public override EquipmentScriptBase.WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
 			this.dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
-            this.DotDamageSettings4Shotgun = new WeaponStructs.DotConfig(WeaponMethods.HasImmuneDefense(target), dmgType, 10f, 20f, 0.2f);
             return base.OnAttackStart(actor, target);
 		}
         public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
@@ -27,12 +26,11 @@ namespace Weapons
             if (target.hp > 0f)
             {
                 target.AddUnitBuf(new DebufSlowDown(2f, 0.5f));
-                target.AddUnitBuf(new DebufDamageMultiply(true));
+                target.AddUnitBuf(new DebufDamageMultiply(true, 1.2f));
             }
             base.OnGiveDamageAfter(actor, target, dmg);
         }
         private RwbpType dmgType;
-        private WeaponStructs.DotConfig DotDamageSettings4Shotgun;
 
     }
 }

@@ -13,7 +13,7 @@ namespace Weapons
 			string animationName = string.Empty;
 			if (WeaponMethods.HasImmuneDefense(target))
 			{
-				this.dmgFlag = true;
+				this.overrideDamageType = true;
 				this.dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
 				for (int i = 0; i < 25; i++)
 				{
@@ -23,7 +23,7 @@ namespace Weapons
 			}
 			else
 			{
-				this.dmgFlag = false;
+				this.overrideDamageType = false;
 				for (int j = 0; j < 6; j++)
 				{
 					list.Add(base.model.metaInfo.damageInfos[0].Copy());
@@ -34,13 +34,13 @@ namespace Weapons
 		}
 		public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
 		{
-			if (this.dmgFlag)
+			if (this.overrideDamageType)
 			{
 				dmg.type = this.dmgType;
 			}
 			return base.OnGiveDamage(actor, target, ref dmg);
 		}
-		private bool dmgFlag;
+		private bool overrideDamageType;
 		private RwbpType dmgType;
 	}
 }

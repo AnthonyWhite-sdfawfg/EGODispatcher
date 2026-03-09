@@ -4,7 +4,7 @@ namespace Bufs
 {
 	public class DebufDamageMultiply : UnitBuf
 	{
-		public DebufDamageMultiply(bool reproducible)
+		public DebufDamageMultiply(bool reproducible, float multiply = 1.5f)
 		{
             type = UnitBufType.ADD_SUPERARMOR;
             if (reproducible) {
@@ -12,6 +12,7 @@ namespace Bufs
             } else {
                 duplicateType = BufDuplicateType.ONLY_ONE;
             }
+            this.multiply = multiply;
 			
 		}
 		public override void Init(UnitModel model)
@@ -21,12 +22,14 @@ namespace Bufs
 		}
 		public override float OnTakeDamage(UnitModel attacker, DamageInfo damageInfo)
 		{
-			return 1.5f;
+			return multiply;
 		}
 		public override void OnUnitDie()
 		{
 			base.OnUnitDie();
 			Destroy();
 		}
+
+        private float multiply;
 	}
 }

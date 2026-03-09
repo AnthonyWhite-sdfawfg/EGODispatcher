@@ -1,4 +1,4 @@
-﻿using System;
+﻿
 using System.Collections.Generic;
 using Bufs;
 using Utils;
@@ -9,7 +9,13 @@ namespace Weapons
 	{
 		public override EquipmentScriptBase.WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
-			this.dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
+            if (WeaponMethods.HasImmuneDefense(target)) {
+                overrideDamageType = true;
+                dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
+            }
+            else {
+                overrideDamageType = false;
+            }
             List<DamageInfo> list = new List<DamageInfo>();
 			for (int i = 0; i < 3; i++)
 			{
@@ -19,10 +25,13 @@ namespace Weapons
 		}
         public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
         {
-            dmg.type = this.dmgType;
-            target.TakeDamage(dmg);
-            target.TakeDamage(dmg);
-            target.TakeDamage(dmg);
+            if (overrideDamageType) {
+                dmg.type = dmgType;
+            }
+            for (int i = 1; i <= 3; i++)
+            {
+                target.TakeDamage(dmg);
+            }
             return base.OnGiveDamage(actor, target, ref dmg);
         }
 
@@ -31,10 +40,10 @@ namespace Weapons
             if (target.hp > 0f)
             {
                 target.AddUnitBuf(new DebufSlowDown(5f, 0.1f));
-                target.AddUnitBuf(new DebufDamageMultiply(false));
             }
             base.OnGiveDamageAfter(actor, target, dmg);
         }
         private RwbpType dmgType;
+        private bool overrideDamageType;
     }
 }
