@@ -15,7 +15,7 @@ namespace Armors
             owner = model.owner;
             worker = owner as WorkerModel;
             currentMode = ArmorStructs.CombatMode.None;
-            RestoreCombatParams(worker);// 取参
+            RestoreCombatParams(worker);// 取参，同时启动Timer
         }
 
         // 每个计时器周期的动作
@@ -29,7 +29,7 @@ namespace Armors
                 currentMode = combatMode;
                 RestoreCombatParams(worker);
             }
-            // 从此处开始为计时器周期
+            // 从此处开始周期为timerInterval
             if (!HealTimer.started || !HealTimer.RunTimer())
             {
                 return;
