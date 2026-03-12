@@ -26,7 +26,7 @@ namespace Weapons
             if (target.hp > 0f)
             {
                 target.AddUnitBuf(new DebufSlowDown(2f, 0.5f));
-                target.AddUnitBuf(new DebufDamageMultiply(true, 1.2f));
+                target.AddUnitBuf(new DebufDamageMultiply(true, 1.2f, 5f));
             }
             base.OnGiveDamageAfter(actor, target, dmg);
         }

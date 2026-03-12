@@ -24,7 +24,7 @@ namespace Weapons
         }
         public override void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg)
         {
-            target.AddUnitBuf(new DebufDamageMultiply(false, 2f));
+            target.AddUnitBuf(new DebufDamageMultiply(false, 2f, 5f));
             base.OnGiveDamageAfter(actor, target, dmg);
         }
 
