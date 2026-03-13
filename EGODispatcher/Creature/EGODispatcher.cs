@@ -14,21 +14,17 @@ namespace Creature
 			animscript.SetScript(this);
 		}
 
-        // 开局注册监听器，初始化员工名单，初始化协程计数器
 		public override void OnStageStart()
 		{
 			base.OnStageStart();
             Timer.StartTimer(1f);// 启动timer
-			Notice.instance.Observe(NoticeName.OnAgentDead, this);// 注册监听器
-			Notice.instance.Observe(NoticeName.AddSystemLog, this);
-            Notice.instance.Observe(NoticeName.OnQliphothOverloadLevelChanged, this);
+            registerNotice();
             _infectionCounter = 0;// 初始化判定清除感染协程的计数器
             _todayType = CreatureMethods.GetTodayType();// 取当日类型
             AgentList.Set();
-            this.animscript.StartCoroutine(DelaySetting4Log());// 其余操作，为了让系统提示出现，用协程套了个壳子延迟0.5秒后运行
+            this.animscript.StartCoroutine(DelaySetting4Log());
         }
 
-        // 结束工作后
         public override void OnFinishWork(UseSkill skill)
         {
             base.OnFinishWork(skill);
@@ -45,17 +41,13 @@ namespace Creature
             animscript.StartCoroutine(CreatureMethods.CreatureProcess(CreatureManager.instance.GetCreatureList()));
         }
 
-        // 当日结束，注销监听器，清空员工列表
 		public override void OnStageEnd()
 		{
 			base.OnStageEnd();
-			Notice.instance.Remove(NoticeName.OnAgentDead, this);// 注销监听器
-			Notice.instance.Remove(NoticeName.AddSystemLog, this);
-            Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
+            deregisterNotice();
             AgentList.Clear();// 清理员工名单
 		}
 
-        // 响应员工死亡，更新员工名单，将死亡员工剔除
 		public void OnNotice(string notice, params object[] param)
 		{
 			if (notice == NoticeName.OnAgentDead)
@@ -81,7 +73,7 @@ namespace Creature
             }
         }
 
-        
+
         public override void OnFixedUpdate(CreatureModel creature)
         {
             base.OnFixedUpdate(creature);
@@ -96,7 +88,9 @@ namespace Creature
             this.Timer.StartTimer(1f);
         }
 
-        // [通用] OnStageStart() 处为保证 SystemLog 出现设置的延时协程
+        /// <summary>
+        /// [通用] OnStageStart() 处为保证 SystemLog 出现设置的延时协程
+        /// </summary>
         private IEnumerator DelaySetting4Log()
         {
             yield return new WaitForSeconds(0.5f);
@@ -113,12 +107,13 @@ namespace Creature
 
 
         /// <summary>
-        /// [移除感染]移除感染协程计数外壳：只做「+1 / -1」& 启动
-        /// 计数是确保同一时间最多只有一个 RemoveInfectionShell 协程在运行，
-        /// 避免多个协程并发执行 RemoveInfection 操作从而出现冲突。
-        /// 虽然timer已经是以1s为单位运作，但是这样避免了后续 RemoveInfection 运行时长超出1s出现的问题。
+        /// [移除感染]移除感染协程计数外壳
         /// </summary>
         /// <param name="batch">内部协程一个批次处理的人数</param>
+        // 只做「+1 / -1」& 启动
+        // 计数是确保同一时间最多只有一个 RemoveInfection 协程在运行，
+        // 避免多个协程并发执行 RemoveInfection 操作从而出现冲突。
+        // 虽然timer已经是以1s为单位运作，但是这样避免了后续 RemoveInfection 运行时长超出1s出现的问题。
         private IEnumerator RemoveInfectionShell(int batch)
         {
             _infectionCounter++;
@@ -131,6 +126,26 @@ namespace Creature
             {
                 _infectionCounter--;
             }
+        }
+
+        /// <summary>
+        /// 注册监听器
+        /// </summary>
+        private void registerNotice()
+        {
+            Notice.instance.Observe(NoticeName.OnAgentDead, this);
+            Notice.instance.Observe(NoticeName.AddSystemLog, this);
+            Notice.instance.Observe(NoticeName.OnQliphothOverloadLevelChanged, this);
+        }
+
+        /// <summary>
+        /// 注销监听器
+        /// </summary>
+        private void deregisterNotice()
+        {
+            Notice.instance.Remove(NoticeName.OnAgentDead, this);
+            Notice.instance.Remove(NoticeName.AddSystemLog, this);
+            Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
         }
 
         public EGODispatcherAnim animscript;

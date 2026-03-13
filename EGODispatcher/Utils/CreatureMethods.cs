@@ -8,7 +8,9 @@ namespace Utils
 {
     public static class CreatureMethods
     {
-        // [ExoSuit]迭代器，生成所有EXOSuit装备
+        /// <summary>
+        /// [ExoSuit]迭代器，生成所有EXOSuit装备
+        /// </summary>   
         public static IEnumerator SpawnEquipmentsToInventory(Dictionary<int, int> plan)
         {
             InventoryModel inv = InventoryModel.Instance;
@@ -35,7 +37,9 @@ namespace Utils
             yield break;
         }
 
-        // [ExoSuit]迭代器，遍历自建的员工list，依照装备的武器分发对应的Attachment套装
+        /// <summary>
+        /// [ExoSuit]迭代器，遍历自建的员工list，依照装备的武器分发对应的Attachment套装
+        /// </summary>
         public static IEnumerator DistributeGiftsToAllAgents()
         {
             // 创建快照
@@ -58,7 +62,9 @@ namespace Utils
             }
         }
 
-        // [ExoSuit]与Armor体系同样的解析ID
+        /// <summary>
+        ///  [ExoSuit]与Armor体系同样的解析ID
+        /// </summary>
         public static int[] ResolveID(AgentModel ag)
         {
             switch (EquipmentTypeInfo.GetLcId(ag.Equipment.weapon.metaInfo).id / ArmorConsts.ID_DIGIT % 10)
@@ -76,7 +82,9 @@ namespace Utils
             }
         }
 
-        // [移除感染]核心方法
+        /// <summary>
+        /// [移除感染]核心方法
+        /// </summary>
         public static void RemoveInfection(AgentModel agent)
         {
             if (agent == null) return;
@@ -93,7 +101,9 @@ namespace Utils
             }
         }
 
-        // [移除感染]迭代器，以输入值为一组进行扫描并处理
+        /// <summary>
+        /// [移除感染]迭代器，以输入值为一组进行扫描并处理感染
+        /// </summary>
         public static IEnumerator RemoveInfection(int batch)
         {
             List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
@@ -113,7 +123,9 @@ namespace Utils
             }
         }
 
-        // [通用]取今日类型
+        /// <summary>
+        /// [通用]取今日类型
+        /// </summary>
         public static CreatureConsts.DayType GetTodayType()
         {
             var mgr = SefiraBossManager.Instance;
@@ -134,19 +146,22 @@ namespace Utils
             return CreatureConsts.DayType.NONE;
         }
 
-        // [Netzach]解锁恢复机制
+        /// <summary>
+        /// [Netzach]解锁恢复机制
+        /// </summary>
         public static void TryUnlockRecover(CreatureConsts.DayType TodayType)
         {
             var mgr = SefiraBossManager.Instance;
-            // 只有被锁且当天类型匹配才解
-            if (mgr.IsRecoverBlocked && TodayType != CreatureConsts.DayType.NONE)
+            if (mgr.IsRecoverBlocked)
             {
                 mgr.SetRecoverBlockState(false);
                 Notice.instance.Send(NoticeName.AddSystemLog, new object[] { $"[EGODispatcher] 已重新解锁恢复机制（{TodayType}）。" });
             }
         }
 
-        // [Malkuth]取Malkuth打乱的工作映射
+        /// <summary>
+        /// [Malkuth]取Malkuth打乱的工作映射
+        /// </summary>
         public static int[] GetWorkMap()
         {
             var mgr = SefiraBossManager.Instance;
@@ -156,7 +171,9 @@ namespace Utils
             return map;
         }
 
-        // [Malkuth]在systemLog中显示工作映射
+        /// <summary>
+        /// [Malkuth]在systemLog中显示工作映射
+        /// </summary>
         public static void LogWorkMap()
         {
             int[] map = GetWorkMap();
@@ -168,7 +185,9 @@ namespace Utils
             Notice.instance.Send(NoticeName.AddSystemLog, new object[] { sb.ToString() });
         }
 
-        // [Yesod]核心方法，销毁主Camera和UI Camera的像素化滤镜
+        /// <summary>
+        /// [Yesod]核心方法，销毁主Camera和UI Camera的像素化滤镜
+        /// </summary>
         public static void ClearYesodFilters()
         {
             // 销毁主 Camera
@@ -195,21 +214,24 @@ namespace Utils
             }
         }
 
-        // [Yesod]迭代器外壳，延迟运行
+        /// <summary>
+        /// [Yesod]迭代器外壳，延迟运行
+        /// </summary>
         public static IEnumerator ClearPixelDelayed()
         {
             yield return new WaitForSeconds(0.5f);
             ClearYesodFilters();
         }
 
-        //[处理异想体]迭代器，复位异想体的计数器，增加pebox
+        /// <summary>
+        /// [处理异想体]迭代器，复位异想体的计数器，增加pebox
+        /// </summary>
         public static IEnumerator CreatureProcess(CreatureModel[] creatures)
         {
             for (int i = 0; i < creatures.Length; i++)
             {
                 creatures[i].ResetQliphothCounter();
                 creatures[i].AddCreatureSuccessCube(10);
-                Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 已处理" });
                 yield return new WaitForEndOfFrame();
             }
         }
