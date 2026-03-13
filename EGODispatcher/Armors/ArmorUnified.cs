@@ -5,17 +5,17 @@ namespace Armors
     /// <summary>
     /// 护甲核心逻辑统一管理脚本
     /// 职责：
-    /// 1. 根据员工当前战斗参数（CombatMode）动态调整回血/回精神的周期与比例；
+    /// 1. 根据员工当前战斗参数（CombatMode）动态调整恢复的周期与比例；
     /// 2. 生命值/精神值低于阈值时修改防御属性；
     /// 3. 武器准备/受击时触发屏障、移速加成等护甲特有效果；
     /// 4. 所有数值常量/结构体/工具方法依赖 ArmorConsts/ArmorStructs/ArmorMethods 定义。
     /// </summary>
     public class ArmorUnified : EquipmentScriptBase
     {
-        #region 生命周期方法
+        #region 钩子
         /// <summary>
         /// 阶段启动时初始化（继承自 EquipmentScriptBase）
-        /// 初始化战斗参数、绑定员工、加载战斗参数并启动回血计时器
+        /// 初始化战斗参数、绑定员工、加载战斗参数并启动恢复计时器
         /// </summary>
         public override void OnStageStart()
         {
@@ -69,15 +69,13 @@ namespace Armors
                 ratioMental = combatParams.MpNormal;  // 正常状态下的精神恢复比例
             }
 
-            // 执行生命/精神恢复逻辑
+            // 执行恢复逻辑
             ArmorMethods.HealThisWorker(worker, ratioHP, ratioMental);
             EnergyModel.instance.AddEnergy(1f);
-            // 重置回血计时器，进入下一个周期
+            // 重置恢复计时器，进入下一个周期
             HealTimer.StartTimer(timerInterval);
         }
-        #endregion
 
-        #region 防御/战斗相关回调
         /// <summary>
         /// 获取当前护甲的防御属性（继承自 EquipmentScriptBase）
         /// 核心逻辑：当单位生命/精神值低于阈值（max*DEFENSE_MARK_RATIO）时，修改对应抗性：
@@ -158,7 +156,7 @@ namespace Armors
 
         #region 私有工具方法
         /// <summary>
-        /// 恢复/更新当前战斗模式对应的参数
+        /// 更新当前战斗模式对应的参数
         /// 包括：更新战斗模式、重置计时器间隔、启动恢复计时器
         /// </summary>
         private void RestoreCombatParams(WorkerModel worker)
@@ -167,7 +165,7 @@ namespace Armors
             currentMode = ArmorMethods.ResolveCombatMode(worker);
             // 根据战斗模式获取对应的计时器间隔
             timerInterval = ArmorStructs.ModeToValues[currentMode].TimerInterval;
-            // 启动/重置回血计时器
+            // 启动/重置恢复计时器
             HealTimer.StartTimer(timerInterval);
         }
 
@@ -201,7 +199,7 @@ namespace Armors
         private float mpMark;
 
         /// <summary>
-        /// 回血/回精神计时器，控制恢复逻辑的执行周期
+        /// 恢复计时器，控制恢复逻辑的执行周期
         /// </summary>
         private readonly Timer HealTimer = new Timer();
 
