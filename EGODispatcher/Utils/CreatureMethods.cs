@@ -7,33 +7,33 @@ using UnityEngine;
 namespace Utils
 {
     public static class CreatureMethods
-	{
+    {
         // [ExoSuit]迭代器，生成所有EXOSuit装备
-		public static IEnumerator SpawnEquipmentsToInventory(Dictionary<int, int> plan)
-		{
-			InventoryModel inv = InventoryModel.Instance;
-			foreach (KeyValuePair<int, int> keyValuePair in plan)
-			{
-				int key = keyValuePair.Key;
-				int value = keyValuePair.Value;
-				LcId rhs = new LcId(key);
-				int num = 0;
-				for (int i = 0; i < inv.equipList.Count; i++)
-				{
-					if (EquipmentTypeInfo.GetLcId(inv.equipList[i].metaInfo) == rhs)
-					{
-						num++;
-					}
-				}
-				int num2 = Mathf.Max(0, value - num);
-				for (int j = 0; j < num2; j++)
-				{
-					inv.CreateEquipment(key);
-				}
-				yield return new WaitForEndOfFrame();
-			}
-			yield break;
-		}
+        public static IEnumerator SpawnEquipmentsToInventory(Dictionary<int, int> plan)
+        {
+            InventoryModel inv = InventoryModel.Instance;
+            foreach (KeyValuePair<int, int> keyValuePair in plan)
+            {
+                int key = keyValuePair.Key;
+                int value = keyValuePair.Value;
+                LcId rhs = new LcId(key);
+                int num = 0;
+                for (int i = 0; i < inv.equipList.Count; i++)
+                {
+                    if (EquipmentTypeInfo.GetLcId(inv.equipList[i].metaInfo) == rhs)
+                    {
+                        num++;
+                    }
+                }
+                int num2 = Mathf.Max(0, value - num);
+                for (int j = 0; j < num2; j++)
+                {
+                    inv.CreateEquipment(key);
+                }
+                yield return new WaitForEndOfFrame();
+            }
+            yield break;
+        }
 
         // [ExoSuit]迭代器，遍历自建的员工list，依照装备的武器分发对应的Attachment套装
         public static IEnumerator DistributeGiftsToAllAgents()
@@ -60,21 +60,21 @@ namespace Utils
 
         // [ExoSuit]与Armor体系同样的解析ID
         public static int[] ResolveID(AgentModel ag)
-		{
-			switch (EquipmentTypeInfo.GetLcId(ag.Equipment.weapon.metaInfo).id / ArmorConsts.ID_DIGIT % 10)
-			{
-			case 1:
-				return CreatureConsts.GiftWorker;
-			case 2:
-				return CreatureConsts.GiftOperative;
-			case 3:
-				return CreatureConsts.GiftKeterCrewMember;
-            case 4:
-                return CreatureConsts.GiftKeterCrewMember;
-            default:
-				return CreatureConsts.GiftDefault;
-			}
-		}
+        {
+            switch (EquipmentTypeInfo.GetLcId(ag.Equipment.weapon.metaInfo).id / ArmorConsts.ID_DIGIT % 10)
+            {
+                case 1:
+                    return CreatureConsts.GiftWorker;
+                case 2:
+                    return CreatureConsts.GiftOperative;
+                case 3:
+                    return CreatureConsts.GiftKeterCrewMember;
+                case 4:
+                    return CreatureConsts.GiftKeterCrewMember;
+                default:
+                    return CreatureConsts.GiftDefault;
+            }
+        }
 
         // [移除感染]核心方法
         public static void RemoveInfection(AgentModel agent)
@@ -83,8 +83,9 @@ namespace Utils
             foreach (UnitBufType type in CreatureConsts.InfectionBufTypes)
             {
                 UnitBuf buf = agent.GetUnitBufByType(type);
-                if (buf != null) {
-                    Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher] {0}受到感染，正在清除……",agent.name) });
+                if (buf != null)
+                {
+                    Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher] {0}受到感染，正在清除……", agent.name) });
                     buf.Destroy();
                     agent.RemoveUnitBuf(buf);
                     agent.GetWorkerUnit().RemoveUnitBuf(buf);
@@ -199,6 +200,18 @@ namespace Utils
         {
             yield return new WaitForSeconds(0.5f);
             ClearYesodFilters();
+        }
+
+        //[处理异想体]迭代器，复位异想体的计数器，增加pebox
+        public static IEnumerator CreatureProcess(CreatureModel[] creatures)
+        {
+            for (int i = 0; i < creatures.Length; i++)
+            {
+                creatures[i].ResetQliphothCounter();
+                creatures[i].AddCreatureSuccessCube(10);
+                Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 已处理" });
+                yield return new WaitForEndOfFrame();
+            }
         }
     }
 }

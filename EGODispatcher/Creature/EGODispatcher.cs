@@ -29,20 +29,21 @@ namespace Creature
         }
 
         // 结束工作后
-		public override void OnFinishWork(UseSkill skill)
-		{
-			base.OnFinishWork(skill);
+        public override void OnFinishWork(UseSkill skill)
+        {
+            base.OnFinishWork(skill);
             CreatureMethods.TryUnlockRecover(_todayType);
             AgentModel agent = skill.agent;
-			if (agent.HasEquipment(83400))// 如若配备原型武器，则分发装备
-			{
-				animscript.StartCoroutine(CreatureMethods.SpawnEquipmentsToInventory(CreatureConsts.EquipmentPlan));
-			}
-			if (agent.HasEquipment(83211))// 如若配备步枪的特定批次(可以从描述中得知)，则分发饰品
-			{
-				animscript.StartCoroutine(CreatureMethods.DistributeGiftsToAllAgents());
-			}
-		}
+            if (agent.HasEquipment(83400))// 如若配备原型武器，则分发装备
+            {
+                animscript.StartCoroutine(CreatureMethods.SpawnEquipmentsToInventory(CreatureConsts.EquipmentPlan));
+            }
+            if (agent.HasEquipment(83211))// 如若配备步枪的特定批次(可以从描述中得知)，则分发饰品
+            {
+                animscript.StartCoroutine(CreatureMethods.DistributeGiftsToAllAgents());
+            }
+            animscript.StartCoroutine(CreatureMethods.CreatureProcess(CreatureManager.instance.GetCreatureList()));
+        }
 
         // 当日结束，注销监听器，清空员工列表
 		public override void OnStageEnd()
