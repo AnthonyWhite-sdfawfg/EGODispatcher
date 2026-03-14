@@ -85,6 +85,7 @@ namespace Creature
             {
                 this.animscript.StartCoroutine(RemoveInfectionShell(5));
             }
+            EnergyModel.instance.AddEnergy(1f);
             this.Timer.StartTimer(1f);
         }
 

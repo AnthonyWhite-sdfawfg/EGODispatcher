@@ -71,7 +71,6 @@ namespace Armors
 
             // 执行恢复逻辑
             ArmorMethods.HealThisWorker(worker, ratioHP, ratioMental);
-            EnergyModel.instance.AddEnergy(1f);
             // 重置恢复计时器，进入下一个周期
             HealTimer.StartTimer(timerInterval);
         }
