@@ -27,7 +27,7 @@ namespace Creature
         public override void OnFinishWork(UseSkill skill)
         {
             base.OnFinishWork(skill);
-            CreatureMethods.TryUnlockRecover(_todayType); //每次工作后解锁一次恢复机制（若锁定）
+            CreatureMethods.TryUnlockRecover(_todayType); // 每次工作后解锁一次恢复机制（若锁定）
             AgentModel agent = skill.agent;
             if (agent.HasEquipment(83400))// 83400：原型武器装备ID - 工作时若配备原型武器，则分发装备
             {
@@ -42,7 +42,8 @@ namespace Creature
 
 		public override void OnStageEnd()
 		{
-			base.OnStageEnd();
+            base.OnStageEnd();
+            MoneyModel.instance.Add(80);// 每天结束固定加80点lob
             DeregisterNotice();// 注销相关监听器
             AgentList.Clear();// 清空当日参与EGO分发的员工列表
         }
@@ -55,7 +56,7 @@ namespace Creature
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {
-                // 仅 Malkuth 或 Day47 才打印
+                // 仅 Malkuth 或 Day47 才更新工作映射
                 if (_todayType == CreatureConsts.DayType.MALKUTH || _todayType == CreatureConsts.DayType.D47)
                 {
                     CreatureMethods.LogWorkMap();
@@ -85,16 +86,16 @@ namespace Creature
             {
                 this.animscript.StartCoroutine(RemoveInfectionShell(5));
             }
-            EnergyModel.instance.AddEnergy(1f);
+            EnergyModel.instance.AddEnergy(1f);// 每秒固定增加1能量
             this.Timer.StartTimer(1f);
         }
 
         /// <summary>
         /// [通用] OnStageStart() 处为保证 SystemLog 出现设置的延时协程
         /// </summary>
-        private IEnumerator DelaySetting4Log(float time)
+        private IEnumerator DelaySetting4Log(float delayTime)
         {
-            yield return new WaitForSeconds(time);
+            yield return new WaitForSeconds(delayTime);
             Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher]今日类型:{0}", _todayType.ToString()) });
             if (_todayType == CreatureConsts.DayType.MALKUTH || _todayType == CreatureConsts.DayType.D47) {
                 CreatureMethods.LogWorkMap();

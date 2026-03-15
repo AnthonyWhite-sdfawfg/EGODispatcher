@@ -93,7 +93,7 @@ namespace Utils
                 UnitBuf buf = agent.GetUnitBufByType(type);
                 if (buf != null)
                 {
-                    Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher] {0}受到感染，正在清除……", agent.name) });
+                    Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher] {0}受到感染，正在清除感染……", agent.name) });
                     buf.Destroy();
                     agent.RemoveUnitBuf(buf);
                     agent.GetWorkerUnit().RemoveUnitBuf(buf);
