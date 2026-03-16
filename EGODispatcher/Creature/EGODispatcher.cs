@@ -4,18 +4,19 @@ using Utils;
 
 namespace Creature
 {
-	public class EGODispatcher : CreatureBase, IObserver
-	{
-		public override void OnViewInit(CreatureUnit unit)
-		{
-			base.OnViewInit(unit);
-			animscript = (EGODispatcherAnim)unit.animTarget;
-			animscript.SetScript(this);
-		}
+    public class EGODispatcher : CreatureBase, IObserver
+    {
+        #region 钩子
+        public override void OnViewInit(CreatureUnit unit)
+        {
+            base.OnViewInit(unit);
+            animscript = (EGODispatcherAnim)unit.animTarget;
+            animscript.SetScript(this);
+        }
 
-		public override void OnStageStart()
-		{
-			base.OnStageStart();
+        public override void OnStageStart()
+        {
+            base.OnStageStart();
             Timer.StartTimer(1f); // 启动1s周期计时器
             RegisterNotice(); // 注册相关监听器
             _infectionCounter = 0;// 初始化感染协程计数器
@@ -40,19 +41,19 @@ namespace Creature
             animscript.StartCoroutine(CreatureMethods.CreatureProcess(CreatureManager.instance.GetCreatureList()));
         }
 
-		public override void OnStageEnd()
-		{
+        public override void OnStageEnd()
+        {
             base.OnStageEnd();
             MoneyModel.instance.Add(80);// 每天结束固定加80点lob
             DeregisterNotice();// 注销相关监听器
             AgentList.Clear();// 清空当日参与EGO分发的员工列表
         }
 
-		public void OnNotice(string notice, params object[] param)
-		{
-			if (notice == NoticeName.OnAgentDead)
-			{
-				AgentList.Update();// 更新当日参与EGO分发的员工列表
+        public void OnNotice(string notice, params object[] param)
+        {
+            if (notice == NoticeName.OnAgentDead)
+            {
+                AgentList.Update();// 更新当日参与EGO分发的员工列表
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {
@@ -89,7 +90,9 @@ namespace Creature
             EnergyModel.instance.AddEnergy(1f);// 每秒固定增加1能量
             this.Timer.StartTimer(1f);
         }
+        #endregion
 
+        #region 私有方法
         /// <summary>
         /// [通用] OnStageStart() 处为保证 SystemLog 出现设置的延时协程
         /// </summary>
@@ -97,7 +100,8 @@ namespace Creature
         {
             yield return new WaitForSeconds(delayTime);
             Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher]今日类型:{0}", _todayType.ToString()) });
-            if (_todayType == CreatureConsts.DayType.MALKUTH || _todayType == CreatureConsts.DayType.D47) {
+            if (_todayType == CreatureConsts.DayType.MALKUTH || _todayType == CreatureConsts.DayType.D47)
+            {
                 CreatureMethods.LogWorkMap();
             }
             if (_todayType == CreatureConsts.DayType.YESOD || _todayType == CreatureConsts.DayType.D47)
@@ -146,7 +150,9 @@ namespace Creature
             Notice.instance.Remove(NoticeName.AddSystemLog, this);
             Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
         }
+        #endregion
 
+        #region 字段
 
         public EGODispatcherAnim animscript;
         /// <summary>
@@ -161,6 +167,7 @@ namespace Creature
         /// 当日业务类型，决定不同场景的分支逻辑
         /// </summary>
         private CreatureConsts.DayType _todayType;
-  
+
+        #endregion
     }
 }

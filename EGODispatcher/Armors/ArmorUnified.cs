@@ -13,7 +13,6 @@ namespace Armors
     {
         #region 钩子
         /// <summary>
-        /// 阶段启动时初始化（继承自 EquipmentScriptBase）
         /// 初始化战斗参数、绑定员工、加载战斗参数并启动恢复计时器
         /// </summary>
         public override void OnStageStart()
@@ -29,11 +28,9 @@ namespace Armors
         }
 
         /// <summary>
-        /// 固定帧更新（继承自 EquipmentScriptBase）
-        /// 核心逻辑：
-        /// 1. 检测战斗模式变化，动态调整参数；
-        /// 2. 计时器周期到后，按当前员工状态（恐慌/正常）进行恢复；
-        /// 3. 每次恢复后重置计时器。
+        /// 检测战斗模式变化，动态调整参数；
+        /// 计时器周期到后，按当前员工状态（恐慌/正常）进行恢复；
+        /// 每次恢复后重置计时器。
         /// </summary>
         public override void OnFixedUpdate()
         {
@@ -75,14 +72,13 @@ namespace Armors
         }
 
         /// <summary>
-        /// 获取当前护甲的防御属性（继承自 EquipmentScriptBase）
-        /// 核心逻辑：当单位生命/精神值低于阈值（max*DEFENSE_MARK_RATIO）时，修改对应抗性：
+        /// 获取当前护甲的防御属性；
+        /// 当单位生命/精神值低于阈值（max*DEFENSE_MARK_RATIO）时，修改对应抗性：
         /// - 生命低于阈值：R/P 抗性改为免疫；
         /// - 精神低于阈值：W/B 抗性改为吸收（-0.1）；
         /// </summary>
         public override DefenseInfo GetDefense(UnitModel actor)
         {
-            // 深拷贝基础防御信息，避免修改原始值
             DefenseInfo defenseInfo = base.GetDefense(actor).Copy();
 
             // 计算生命/精神阈值（最大值 * 阈值比例）
@@ -105,12 +101,6 @@ namespace Armors
             return defenseInfo;
         }
 
-        /// <summary>
-        /// 武器准备阶段回调（继承自 EquipmentScriptBase）
-        /// 核心逻辑：
-        /// 1. 满足条件时为单位添加准备阶段屏障；
-        /// 2. 为单位添加移速加成Buff（唯一）；
-        /// </summary>
         public override void OnPrepareWeapon(UnitModel actor)
         {
             // 满足屏障添加条件 → 挂载准备阶段屏障Buff
@@ -128,10 +118,6 @@ namespace Armors
             base.OnPrepareWeapon(actor);
         }
 
-        /// <summary>
-        /// 受击时回调（继承自 EquipmentScriptBase）
-        /// 核心逻辑：满足条件时添加受击屏障，并拦截本次伤害（返回false）；否则走基础受击逻辑
-        /// </summary>
         public override bool OnTakeDamage(UnitModel actor, ref DamageInfo dmg)
         {
             // 所属单位为空 → 直接返回
@@ -202,13 +188,9 @@ namespace Armors
         private readonly Timer HealTimer = new Timer();
 
         /// <summary>
-        /// 当前绑定的工人模型（从owner转换而来），用于获取战斗状态/执行恢复逻辑
+        /// 当前绑定的员工，用于获取战斗状态/执行恢复逻辑
         /// </summary>
         private WorkerModel worker;
-
-        /// <summary>
-        /// 护甲所属的单位模型（根载体）
-        /// </summary>
         private UnitModel owner;
 
         /// <summary>
