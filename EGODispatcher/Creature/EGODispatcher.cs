@@ -24,7 +24,7 @@ namespace Creature
             _todayType = CreatureMethods.GetTodayType();// 获取当日业务类型
             AgentList.Set();// 初始化当日参与EGO分发的员工列表
             creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
-            this.animscript.StartCoroutine(DelaySetting4Log(0.5f));// 打印相关log，注册监听器需要时间，为保证log得以出现，故延时运行
+            animscript.StartCoroutine(DelaySetting4Log(0.5f));// 打印相关log，注册监听器需要时间，为保证log得以出现，故延时运行
         }
 
         public override void OnFinishWork(UseSkill skill)
@@ -36,12 +36,12 @@ namespace Creature
             {
                 animscript.StartCoroutine(CreatureMethods.SpawnEquipmentsToInventory(CreatureConsts.EquipmentPlan));
             }
-            if (agent.HasEquipment(83211))// 83211：特定批次步枪装备ID - 工作时如若配备步枪的特定批次(游戏中存在标识)，则分发饰品
+            if (agent.HasEquipment(83211))// 83211：特定批次步枪装备ID - 工作时如若配备步枪的特定批次(游戏中存在标识)，则分发饰品 & 统一员工发型
             {
                 animscript.StartCoroutine(CreatureMethods.BatchProcess(CreatureMethods.DistributeGiftToAgent));
                 animscript.StartCoroutine(CreatureMethods.BatchProcess(MakeBald));
             }
-            animscript.StartCoroutine(CreatureMethods.CreatureProcess(creatureModels));
+            animscript.StartCoroutine(CreatureMethods.CreatureProcess(creatureModels)); //每次工作后增加所有异想体的计数器和 pebox
         }
 
         public override void OnStageEnd()
@@ -88,10 +88,10 @@ namespace Creature
             }
             if (_infectionCounter == 0)// 若感染移除协程未运行（计数器为0），则启动协程处理感染
             {
-                this.animscript.StartCoroutine(RemoveInfectionShell());
+                animscript.StartCoroutine(RemoveInfectionShell());
             }
             EnergyModel.instance.AddEnergy(creatureModels.Length);// 每秒固定增加1能量
-            this.Timer.StartTimer(1f);
+            Timer.StartTimer(1f);
         }
         #endregion
 
@@ -156,11 +156,11 @@ namespace Creature
 
 
         /// <summary>
-        /// 将指定员工变秃（修改为48号光头）
+        /// 将员工变秃（修改为48号光头）
         /// </summary>
         private void MakeBald(WorkerModel target)
         {
-            // 1. 修改运行时精灵引用
+            // 1. 修改运行时 sprite 引用
             target.spriteData.FrontHair = BALD_FRONT_SPRITE;
             target.spriteData.RearHair = BALD_REAR_SPRITE;
 
@@ -200,7 +200,7 @@ namespace Creature
         private static readonly Sprite BALD_REAR_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Rear/RearHair_Transparent");
 
         // 光头配置对应的游戏内编号48
-        private static readonly global::WorkerSprite.WorkerSpriteSaveData.Pair BALD_PAIR = new global::WorkerSprite.WorkerSpriteSaveData.Pair(0, 0);
+        private static readonly WorkerSprite.WorkerSpriteSaveData.Pair BALD_PAIR = new WorkerSprite.WorkerSpriteSaveData.Pair(0, 0);
 
 
         #endregion
