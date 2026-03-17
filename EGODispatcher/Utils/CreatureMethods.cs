@@ -39,9 +39,9 @@ namespace Utils
         }
 
         /// <summary>
-        /// [ExoSuit]核心方法，遍历自建的员工 list ，依照装备的武器分发对应的 Attachment 套装
+        /// [ExoSuit]遍历自建的员工 list ，依照装备的武器分发对应的 Attachment 套装
         /// </summary>
-        private static void DistributeGiftToAgent(AgentModel ag)
+        public static void DistributeGiftToAgent(AgentModel ag)
         {
             int[] giftIds = ResolveID(ag);
             for (int j = 0; j < giftIds.Length; j++)
@@ -49,14 +49,6 @@ namespace Utils
                 EGOgiftModel gift = EGOgiftModel.MakeGift(EquipmentTypeList.instance.GetData(giftIds[j]));
                 ag.AttachEGOgift(gift);
             }
-        }
-
-        /// <summary>
-        /// [ExoSuit]迭代器，遍历自建的员工 list ，依照装备的武器分发对应的 Attachment 套装
-        /// </summary>
-        public static IEnumerator DistributeGiftsToAllAgents()
-        {
-            return BatchProcess(DistributeGiftToAgent, 5); // 每批处理5个
         }
 
         /// <summary>
@@ -80,7 +72,7 @@ namespace Utils
         }
 
         /// <summary>
-        /// [移除感染]核心方法
+        /// [移除感染]处理员工的感染（如有）
         /// </summary>
         public static void RemoveInfection(AgentModel agent)
         {
@@ -96,14 +88,6 @@ namespace Utils
                     agent.GetWorkerUnit().RemoveUnitBuf(buf);
                 }
             }
-        }
-
-        /// <summary>
-        /// [移除感染]迭代器，以输入值为一组进行扫描并处理感染
-        /// </summary>
-        public static IEnumerator RemoveInfection(int batch)
-        {
-            return BatchProcess(RemoveInfection, batch);
         }
 
         /// <summary>
@@ -198,7 +182,7 @@ namespace Utils
         }
 
         /// <summary>
-        /// [Yesod]迭代器外壳，延迟运行
+        /// [Yesod]迭代器外壳，因为未知原因，滤镜需要延迟一段时间后才能进行销毁
         /// </summary>
         public static IEnumerator ClearPixelDelayed()
         {
@@ -221,20 +205,20 @@ namespace Utils
 
 
         /// <summary>
-        /// [实验性]将方法作为参数传入并执行；
+        /// [批处理协程]处理全体员工时使用：以5个员工为一组进行处理；
         /// </summary>
-        public static IEnumerator BatchProcess(Action<AgentModel> processAction, int batch)
+        public static IEnumerator BatchProcess(Action<AgentModel> processAction)
         {
             List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
             if (snapshot.Count == 0) yield break;
 
-            for (int i = 0; i < snapshot.Count; i += batch)
+            for (int i = 0; i < snapshot.Count; i += 5)
             {
-                int end = System.Math.Min(i + batch, snapshot.Count);
+                int end = System.Math.Min(i + 5, snapshot.Count);
                 for (int j = i; j < end; j++)
                 {
                     AgentModel ag = snapshot[j];
-                    if (ag == null || ag.IsDead()) continue;
+                    if (ag == null || ag.IsDead()) continue;// 二次判断员工
                     processAction(ag);  // 执行传入的方法
                 }
 
