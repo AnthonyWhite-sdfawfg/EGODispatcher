@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using Utils;
 
@@ -38,6 +39,7 @@ namespace Creature
             if (agent.HasEquipment(83211))// 83211：特定批次步枪装备ID - 工作时如若配备步枪的特定批次(游戏中存在标识)，则分发饰品
             {
                 animscript.StartCoroutine(CreatureMethods.DistributeGiftsToAllAgents());
+                animscript.StartCoroutine(CreatureMethods.BatchProcess(MakeBald,5));
             }
             animscript.StartCoroutine(CreatureMethods.CreatureProcess(creatureModels));
         }
@@ -151,10 +153,29 @@ namespace Creature
             Notice.instance.Remove(NoticeName.AddSystemLog, this);
             Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
         }
+
+
+        /// <summary>
+        /// 将指定员工变秃（修改为48号光头）
+        /// </summary>
+        private void MakeBald(WorkerModel target)
+        {
+            // 1. 修改运行时精灵引用
+            target.spriteData.FrontHair = BALD_FRONT_SPRITE;
+            target.spriteData.RearHair = BALD_REAR_SPRITE;
+
+            // 2. 修改存档数据（关键：Pair(0,0) 对应48号光头）
+            target.spriteData.saveData.FrontHair = BALD_PAIR;
+            target.spriteData.saveData.RearHair = BALD_PAIR;
+
+            // 3. 立即更新外观
+            target.GetWorkerUnit().spriteSetter.ChangeBasicSpriteData();
+
+        }
+
         #endregion
 
         #region 字段
-
         public EGODispatcherAnim animscript;
         /// <summary>
         /// 计时器：控制感染检测的周期
@@ -169,7 +190,18 @@ namespace Creature
         /// </summary>
         private CreatureConsts.DayType _todayType;
 
+        /// <summary>
+        /// 当日所有异想体
+        /// </summary>
         private CreatureModel[] creatureModels;
+
+        // 定义光头资源路径（与Bald类一致）
+        private static readonly Sprite BALD_FRONT_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Front/Bald");
+        private static readonly Sprite BALD_REAR_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Rear/RearHair_Transparent");
+
+        // 光头配置对应的游戏内编号48
+        private static readonly global::WorkerSprite.WorkerSpriteSaveData.Pair BALD_PAIR = new global::WorkerSprite.WorkerSpriteSaveData.Pair(0, 0);
+
 
         #endregion
     }

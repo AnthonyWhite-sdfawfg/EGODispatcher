@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using LobotomyBaseMod;
@@ -197,7 +198,7 @@ namespace Utils
                 var pix = mainCam.GetComponent<CameraFilterPack_Pixel_Pixelisation>();
                 if (pix)
                 {
-                    Object.DestroyImmediate(pix);
+                    UnityEngine.Object.DestroyImmediate(pix);
                     Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 已销毁主Camera的像素化滤镜组件" });
                 }
             }
@@ -208,7 +209,7 @@ namespace Utils
                 var pix = uiCam.GetComponent<CameraFilterPack_Pixel_Pixelisation>();
                 if (pix)
                 {
-                    Object.DestroyImmediate(pix);
+                    UnityEngine.Object.DestroyImmediate(pix);
                     Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 已销毁UI Camera的像素化滤镜组件" });
                 }
             }
@@ -235,5 +236,30 @@ namespace Utils
                 yield return new WaitForEndOfFrame();
             }
         }
+
+
+        /// <summary>
+        /// [实验性]将方法作为参数传入并执行；
+        /// </summary>
+        public static IEnumerator BatchProcess(Action<AgentModel> processAction, int batch)
+        {
+            List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
+            if (snapshot.Count == 0) yield break;
+
+            for (int i = 0; i < snapshot.Count; i += batch)
+            {
+                int end = System.Math.Min(i + batch, snapshot.Count);
+                for (int j = i; j < end; j++)
+                {
+                    AgentModel ag = snapshot[j];
+                    if (ag == null || ag.IsDead()) continue;
+                    processAction(ag);  // 执行传入的方法
+                }
+
+                yield return null;
+            }
+        }
+
+
     }
 }
