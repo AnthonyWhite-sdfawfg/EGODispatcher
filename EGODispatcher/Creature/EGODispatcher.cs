@@ -22,6 +22,7 @@ namespace Creature
             _infectionCounter = 0;// 初始化感染协程计数器
             _todayType = CreatureMethods.GetTodayType();// 获取当日业务类型
             AgentList.Set();// 初始化当日参与EGO分发的员工列表
+            creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
             this.animscript.StartCoroutine(DelaySetting4Log(0.5f));// 打印相关log，注册监听器需要时间，为保证log得以出现，故延时运行
         }
 
@@ -38,13 +39,13 @@ namespace Creature
             {
                 animscript.StartCoroutine(CreatureMethods.DistributeGiftsToAllAgents());
             }
-            animscript.StartCoroutine(CreatureMethods.CreatureProcess(CreatureManager.instance.GetCreatureList()));
+            animscript.StartCoroutine(CreatureMethods.CreatureProcess(creatureModels));
         }
 
         public override void OnStageEnd()
         {
             base.OnStageEnd();
-            MoneyModel.instance.Add(80);// 每天结束固定加80点lob
+            MoneyModel.instance.Add(creatureModels.Length * 10);// 每天结束固定加lob,，增加值为当天异想体数量*10。
             DeregisterNotice();// 注销相关监听器
             AgentList.Clear();// 清空当日参与EGO分发的员工列表
         }
@@ -87,7 +88,7 @@ namespace Creature
             {
                 this.animscript.StartCoroutine(RemoveInfectionShell(5));
             }
-            EnergyModel.instance.AddEnergy(1f);// 每秒固定增加1能量
+            EnergyModel.instance.AddEnergy(creatureModels.Length);// 每秒固定增加1能量
             this.Timer.StartTimer(1f);
         }
         #endregion
@@ -167,6 +168,8 @@ namespace Creature
         /// 当日业务类型，决定不同场景的分支逻辑
         /// </summary>
         private CreatureConsts.DayType _todayType;
+
+        private CreatureModel[] creatureModels;
 
         #endregion
     }

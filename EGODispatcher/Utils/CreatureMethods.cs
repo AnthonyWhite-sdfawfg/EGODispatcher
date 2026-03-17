@@ -9,7 +9,7 @@ namespace Utils
     public static class CreatureMethods
     {
         /// <summary>
-        /// [ExoSuit]迭代器，生成所有EXOSuit装备
+        /// [ExoSuit]迭代器，生成所有 EXOSuit 装备
         /// </summary>   
         public static IEnumerator SpawnEquipmentsToInventory(Dictionary<int, int> plan)
         {
@@ -38,7 +38,7 @@ namespace Utils
         }
 
         /// <summary>
-        /// [ExoSuit]迭代器，遍历自建的员工list，依照装备的武器分发对应的Attachment套装
+        /// [ExoSuit]迭代器，遍历自建的员工 list ，依照装备的武器分发对应的 Attachment 套装
         /// </summary>
         public static IEnumerator DistributeGiftsToAllAgents()
         {
@@ -63,7 +63,7 @@ namespace Utils
         }
 
         /// <summary>
-        ///  [ExoSuit]与Armor体系同样的解析ID
+        ///  [ExoSuit]与 Armor 体系同样的解析ID
         /// </summary>
         public static int[] ResolveID(AgentModel ag)
         {
@@ -160,7 +160,7 @@ namespace Utils
         }
 
         /// <summary>
-        /// [Malkuth]取Malkuth打乱的工作映射
+        /// [Malkuth]取 Malkuth 打乱的工作映射
         /// </summary>
         public static int[] GetWorkMap()
         {
@@ -172,7 +172,7 @@ namespace Utils
         }
 
         /// <summary>
-        /// [Malkuth]在systemLog中显示工作映射
+        /// [Malkuth]在 systemLog 中显示工作映射
         /// </summary>
         public static void LogWorkMap()
         {
@@ -186,7 +186,7 @@ namespace Utils
         }
 
         /// <summary>
-        /// [Yesod]核心方法，销毁主Camera和UI Camera的像素化滤镜
+        /// [Yesod]核心方法，销毁主 Camera 和 UI Camera 的像素化滤镜
         /// </summary>
         public static void ClearYesodFilters()
         {
@@ -224,13 +224,13 @@ namespace Utils
         }
 
         /// <summary>
-        /// [处理异想体]迭代器，复位异想体的计数器，增加pebox
+        /// [处理异想体]迭代器，异想体计数器+1，增加 pebox
         /// </summary>
         public static IEnumerator CreatureProcess(CreatureModel[] creatures)
         {
             for (int i = 0; i < creatures.Length; i++)
             {
-                creatures[i].ResetQliphothCounter();
+                creatures[i].AddQliphothCounter();
                 creatures[i].AddCreatureSuccessCube(10);
                 yield return new WaitForEndOfFrame();
             }

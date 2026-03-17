@@ -12,9 +12,6 @@ namespace Armors
     public class ArmorUnified : EquipmentScriptBase
     {
         #region 钩子
-        /// <summary>
-        /// 初始化战斗参数、绑定员工、加载战斗参数并启动恢复计时器
-        /// </summary>
         public override void OnStageStart()
         {
             base.OnStageStart();
@@ -27,11 +24,6 @@ namespace Armors
             RestoreCombatParams(worker);
         }
 
-        /// <summary>
-        /// 检测战斗模式变化，动态调整参数；
-        /// 计时器周期到后，按当前员工状态（恐慌/正常）进行恢复；
-        /// 每次恢复后重置计时器。
-        /// </summary>
         public override void OnFixedUpdate()
         {
             base.OnFixedUpdate();
@@ -71,12 +63,6 @@ namespace Armors
             HealTimer.StartTimer(timerInterval);
         }
 
-        /// <summary>
-        /// 获取当前护甲的防御属性；
-        /// 当单位生命/精神值低于阈值（max*DEFENSE_MARK_RATIO）时，修改对应抗性：
-        /// - 生命低于阈值：R/P 抗性改为免疫；
-        /// - 精神低于阈值：W/B 抗性改为吸收（-0.1）；
-        /// </summary>
         public override DefenseInfo GetDefense(UnitModel actor)
         {
             DefenseInfo defenseInfo = base.GetDefense(actor).Copy();
@@ -160,8 +146,8 @@ namespace Armors
         {
             return new UnitStatBuf(ArmorConsts.SPEED_BUF_DURATION, UnitBufType.ADD_SUPERARMOR)
             {
-                duplicateType = BufDuplicateType.ONLY_ONE, // Buff唯一：同一时间仅生效一个
-                movementSpeed = ArmorConsts.SPEED_BUF_VALUE // 移速加成数值（常量定义）
+                duplicateType = BufDuplicateType.ONLY_ONE, 
+                movementSpeed = ArmorConsts.SPEED_BUF_VALUE 
             };
         }
         #endregion
