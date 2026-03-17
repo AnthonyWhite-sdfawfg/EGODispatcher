@@ -39,28 +39,24 @@ namespace Utils
         }
 
         /// <summary>
+        /// [ExoSuit]核心方法，遍历自建的员工 list ，依照装备的武器分发对应的 Attachment 套装
+        /// </summary>
+        private static void DistributeGiftToAgent(AgentModel ag)
+        {
+            int[] giftIds = ResolveID(ag);
+            for (int j = 0; j < giftIds.Length; j++)
+            {
+                EGOgiftModel gift = EGOgiftModel.MakeGift(EquipmentTypeList.instance.GetData(giftIds[j]));
+                ag.AttachEGOgift(gift);
+            }
+        }
+
+        /// <summary>
         /// [ExoSuit]迭代器，遍历自建的员工 list ，依照装备的武器分发对应的 Attachment 套装
         /// </summary>
         public static IEnumerator DistributeGiftsToAllAgents()
         {
-            // 创建快照
-            List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
-
-            // 遍历快照
-            foreach (AgentModel ag in snapshot)
-            {
-                if (ag == null || ag.IsDead())    // 二次排除已死亡员工
-                    continue;
-
-                int[] giftIds = ResolveID(ag);
-                for (int j = 0; j < giftIds.Length; j++)
-                {
-                    EGOgiftModel gift = EGOgiftModel.MakeGift(EquipmentTypeList.instance.GetData(giftIds[j]));
-                    ag.AttachEGOgift(gift);
-                }
-
-                yield return new WaitForEndOfFrame();
-            }
+            return BatchProcess(DistributeGiftToAgent, 5); // 每批处理5个
         }
 
         /// <summary>
@@ -107,21 +103,7 @@ namespace Utils
         /// </summary>
         public static IEnumerator RemoveInfection(int batch)
         {
-            List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
-            if (snapshot.Count == 0) yield break;
-
-            for (int i = 0; i < snapshot.Count; i += batch)
-            {
-                int end = System.Math.Min(i + batch, snapshot.Count);
-                for (int j = i; j < end; j++)
-                {
-                    AgentModel ag = snapshot[j];
-                    if (ag == null || ag.IsDead()) continue;    // 二次排除已死亡员工
-                    CreatureMethods.RemoveInfection(ag);
-                }
-
-                yield return null;
-            }
+            return BatchProcess(RemoveInfection, batch);
         }
 
         /// <summary>
