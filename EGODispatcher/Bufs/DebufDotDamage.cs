@@ -5,11 +5,26 @@ namespace Bufs
 {
 	public class DebufDotDamage : UnitBuf
 	{
-		public override void Init(UnitModel model)
+        public DebufDotDamage(WeaponStructs.DotConfig config)
+        {
+            this._overrideDamageType = config.overrideDamageType;
+            this._totalDuration = config.totalDuration;
+            this._tickRate = config.tickRate;
+            this._damageType = config.damageType;
+            this._tickDamage = config.tickDamage;
+
+            this.tickTimer.StartTimer(_tickRate);
+            this.duplicateType = BufDuplicateType.ONLY_ONE;
+            this.type = UnitBufType.ADD_SUPERARMOR;
+
+        }
+
+        public override void Init(UnitModel model)
 		{
 			base.Init(model);
 			this.remainTime = _totalDuration;
 		}
+
 		public override void FixedUpdate()
 		{
 			base.FixedUpdate();
@@ -36,31 +51,19 @@ namespace Bufs
 				this.tickTimer.StartTimer(_tickRate);
 			}
 		}
+
 		public override void OnUnitDie()
 		{
 			base.OnUnitDie();
 			this.Destroy();
 		}
-        public DebufDotDamage(WeaponStructs.DotConfig config)
-		{
-            this._overrideDamageType = config.overrideDamageType;
-            this._totalDuration = config.totalDuration;
-            this._tickRate = config.tickRate;
-            this._damageType = config.damageType;
-            this._tickDamage = config.tickDamage;
 
-            this.tickTimer.StartTimer(_tickRate);
-			this.duplicateType = BufDuplicateType.ONLY_ONE;
-			this.type = UnitBufType.ADD_SUPERARMOR;
-
-		}
 		private Timer tickTimer = new Timer();
         private bool _overrideDamageType;
         private float _totalDuration;
         private float _tickDamage;
         private float _tickRate;
         private RwbpType _damageType;
-
 
 	}
 }
