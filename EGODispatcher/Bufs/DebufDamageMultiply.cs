@@ -16,7 +16,7 @@ namespace Bufs
                 duplicateType = BufDuplicateType.ONLY_ONE;
             }
             this.multiply = multiply;
-			
+            this.duration = duration;
 		}
 		public override void Init(UnitModel model)
 		{
