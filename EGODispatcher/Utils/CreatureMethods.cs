@@ -51,15 +51,6 @@ namespace Utils
                 {
                     ag.AttachEGOgift(gift);
                 }
-                else
-                {
-                    Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] generation passed." });
-                }
-
-
-
-
-               
             }
         }
 
