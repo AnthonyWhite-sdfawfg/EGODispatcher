@@ -23,10 +23,12 @@ namespace Utils
 				AgentList.activeAgents.Add(agentList[i]);
 			}
         }
+
 		public static void Clear()
 		{
 			AgentList.activeAgents.Clear();
 		}
+
 		public static void Update()
 		{
 			AgentList.activeAgents.Clear();
@@ -40,6 +42,7 @@ namespace Utils
 				}
 			}
 		}
+
 		public static void LogAgents()
 		{
 			StringBuilder stringBuilder = new StringBuilder();
@@ -51,6 +54,7 @@ namespace Utils
 			}
 			Notice.instance.Send("AddSystemLog", new object[] { stringBuilder.ToString() });
 		}
+
 		public static void LogAgentsBySefira()
 		{
 			Dictionary<string, List<AgentModel>> dictionary = new Dictionary<string, List<AgentModel>>();
@@ -83,6 +87,7 @@ namespace Utils
 			}
 			Notice.instance.Send("AddSystemLog", new object[] { stringBuilder.ToString() });
 		}
+
 		private static List<AgentModel> activeAgents = new List<AgentModel>();
 	}
 }
