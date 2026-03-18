@@ -136,6 +136,10 @@ namespace Armors
             // 根据战斗模式获取对应的计时器间隔
             timerInterval = ArmorStructs.ModeToValues[currentMode].TimerInterval;
             // 启动/重置恢复计时器
+            if (HealTimer.started || HealTimer.RunTimer())
+            {
+                HealTimer.StopTimer();
+            }
             HealTimer.StartTimer(timerInterval);
         }
 
