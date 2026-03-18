@@ -1,7 +1,7 @@
 ﻿using Utils;
 using Bufs;
 
-namespace EGODispatcher.Weapons
+namespace Weapons
 {
     class WeaponCannon : EquipmentScriptBase
     {

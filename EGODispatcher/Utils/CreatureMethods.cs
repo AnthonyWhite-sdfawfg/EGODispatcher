@@ -47,7 +47,19 @@ namespace Utils
             for (int j = 0; j < giftIds.Length; j++)
             {
                 EGOgiftModel gift = EGOgiftModel.MakeGift(EquipmentTypeList.instance.GetData(giftIds[j]));
-                ag.AttachEGOgift(gift);
+                if (!ag.HasEquipment(giftIds[j]))
+                {
+                    ag.AttachEGOgift(gift);
+                }
+                else
+                {
+                    Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] generation passed." });
+                }
+
+
+
+
+               
             }
         }
 
