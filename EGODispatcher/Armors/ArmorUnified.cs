@@ -27,15 +27,6 @@ namespace Armors
         public override void OnFixedUpdate()
         {
             base.OnFixedUpdate();
-
-            // 若员工装备出现变化则重新加载战斗参数
-            ArmorStructs.CombatMode combatMode = ArmorMethods.ResolveCombatMode(worker);
-            if (combatMode != currentMode)
-            {
-                currentMode = combatMode;
-                RestoreCombatParams(worker);
-            }
-
             // 计时器未启动 / 未到执行周期 → 跳过本次恢复逻辑
             if (!HealTimer.started || !HealTimer.RunTimer())
             {
@@ -127,7 +118,6 @@ namespace Armors
         #region 私有工具方法
         /// <summary>
         /// 更新当前战斗模式对应的参数
-        /// 包括：更新战斗模式、重置计时器间隔、启动恢复计时器
         /// </summary>
         private void RestoreCombatParams(WorkerModel worker)
         {
@@ -135,11 +125,7 @@ namespace Armors
             currentMode = ArmorMethods.ResolveCombatMode(worker);
             // 根据战斗模式获取对应的计时器间隔
             timerInterval = ArmorStructs.ModeToValues[currentMode].TimerInterval;
-            // 启动/重置恢复计时器
-            if (HealTimer.started || HealTimer.RunTimer())
-            {
-                HealTimer.StopTimer();
-            }
+            // 启动计时器
             HealTimer.StartTimer(timerInterval);
         }
 
