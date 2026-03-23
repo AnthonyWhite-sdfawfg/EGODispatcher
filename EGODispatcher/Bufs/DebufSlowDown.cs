@@ -15,9 +15,9 @@ namespace Bufs
         public DebufSlowDown(float remainTime = 1f, float movementScale = 0.3f)
 		{
 			this.remainTime = remainTime;
-            this._movementScale = movementScale;
-			this.duplicateType = BufDuplicateType.ONLY_ONE;
-			this.type = UnitBufType.DANGO_CREATURE_WEAPON_SLOW_NORMAL;
+            _movementScale = movementScale;
+			duplicateType = BufDuplicateType.ONLY_ONE;
+			type = UnitBufType.DANGO_CREATURE_WEAPON_SLOW_NORMAL;
            
         }
         public override void Init(UnitModel model)
@@ -30,25 +30,25 @@ namespace Bufs
 			}
 			if (model is CreatureModel)
 			{
-				this.creature = model as CreatureModel;
-				this.creature.movementScale = this.creature.movementScale * this._movementScale;
+				creature = model as CreatureModel;
+				creature.movementScale *= _movementScale;
 			}
 		}
 		
 		public override void OnUnitDie()
 		{
 			base.OnUnitDie();
-			this.Destroy();
+			Destroy();
 		}
 		public override void OnDestroy()
 		{
 			base.OnDestroy();
-			if (this.creature != null)
+			if (creature != null)
 			{
-				this.creature.movementScale = this.creature.movementScale / this._movementScale;
+				creature.movementScale /= _movementScale;
 			}
 		}
 		private CreatureModel creature;
-        private float _movementScale;
+        private readonly float _movementScale;
 	}
 }

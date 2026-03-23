@@ -7,15 +7,15 @@ namespace Weapons
     {
         public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
         {
-            this.overrideDamageType = WeaponMethods.HasImmuneDefense(target);
-            this.dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
-            this.dotConfigCannon = new WeaponStructs.DotConfig(overrideDamageType, dmgType, 10f, 20f, 0.1f);
+            overrideDamageType = WeaponMethods.HasImmuneDefense(target);
+            dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
+            dotConfigCannon = new WeaponStructs.DotConfig(overrideDamageType, dmgType, 10f, 20f, 0.1f);
             return base.OnAttackStart(actor, target);
         }
         public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
         {
             if (overrideDamageType) {
-                dmg.type = this.dmgType;
+                dmg.type = dmgType;
             }
             return base.OnGiveDamage(actor, target, ref dmg);
         }

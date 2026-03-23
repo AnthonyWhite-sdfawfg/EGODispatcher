@@ -7,7 +7,7 @@ namespace Weapons
 {
 	public class WeaponPistol : EquipmentScriptBase
 	{
-		public override EquipmentScriptBase.WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
+		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
             if (WeaponMethods.HasImmuneDefense(target)) {
                 overrideDamageType = true;
@@ -21,7 +21,7 @@ namespace Weapons
 			{
 				list.Add(base.model.metaInfo.damageInfos[0].Copy());
 			}
-			return new EquipmentScriptBase.WeaponDamageInfo(base.model.metaInfo.animationNames[0], list.ToArray());
+			return new WeaponDamageInfo(base.model.metaInfo.animationNames[0], list.ToArray());
 		}
         public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
         {

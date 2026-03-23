@@ -56,7 +56,7 @@ namespace Creature
         {
             if (notice == NoticeName.OnAgentDead)
             {
-                AgentList.Update();
+                AgentList.Remove();
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {

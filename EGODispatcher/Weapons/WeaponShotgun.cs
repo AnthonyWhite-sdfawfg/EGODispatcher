@@ -6,14 +6,14 @@ namespace Weapons
 {
 	public class WeaponShotgun : EquipmentScriptBase
 	{
-		public override EquipmentScriptBase.WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
+		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
 			this.dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
             return base.OnAttackStart(actor, target);
 		}
         public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
         {
-            dmg.type = this.dmgType;
+            dmg.type = dmgType;
             for (int i = 1; i <= 5; i++)
             {
                 target.TakeDamage(dmg);

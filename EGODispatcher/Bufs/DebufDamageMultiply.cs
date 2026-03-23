@@ -33,7 +33,7 @@ namespace Bufs
 			Destroy();
 		}
 
-        private float multiply;
-        private float duration;
+        private readonly float multiply;
+        private readonly float duration;
 	}
 }
