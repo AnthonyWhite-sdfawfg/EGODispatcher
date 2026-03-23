@@ -29,21 +29,20 @@ namespace Utils
 			AgentList.activeAgents.Clear();
 		}
 
-		public static void Update()
-		{
-			AgentList.activeAgents.Clear();
-			IList<AgentModel> allAgents = AgentManager.instance.GetAgentList();
-			for (int i = 0; i < allAgents.Count; i++)
-			{
-				AgentModel agentModel = allAgents[i];
-				if (agentModel != null && !agentModel.IsDead())
-				{
-					AgentList.activeAgents.Add(agentModel);
-				}
-			}
-		}
+        public static void Update()
+        {
+            // 从后向前遍历，安全移除死亡或空引用
+            for (int i = activeAgents.Count - 1; i >= 0; i--)
+            {
+                AgentModel agent = activeAgents[i];
+                if (agent == null || agent.IsDead())
+                {
+                    activeAgents.RemoveAt(i);
+                }
+            }
+        }
 
-		public static void LogAgents()
+        public static void LogAgents()
 		{
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.AppendLine("[AgentList] 员工列表：");

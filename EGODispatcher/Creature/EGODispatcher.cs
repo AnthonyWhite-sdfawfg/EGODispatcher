@@ -18,7 +18,7 @@ namespace Creature
         public override void OnStageStart()
         {
             base.OnStageStart();
-            Timer.StartTimer(1f); // 启动1s周期计时器
+            infectionTimer.StartTimer(1f); // 启动1s周期计时器
             RegisterNotice(); // 注册相关监听器
             _infectionCounter = 0;// 初始化感染协程计数器
             _todayType = CreatureMethods.GetTodayType();// 获取当日业务类型
@@ -47,16 +47,16 @@ namespace Creature
         public override void OnStageEnd()
         {
             base.OnStageEnd();
-            MoneyModel.instance.Add(creatureModels.Length * 10);// 每天结束固定加lob,，增加值为当天异想体数量*10。
+            MoneyModel.instance.Add(creatureModels.Length);// 每天结束固定加lob，增加值为当天异想体数量。
             DeregisterNotice();// 注销相关监听器
-            AgentList.Clear();// 清空当日参与EGO分发的员工列表
+            AgentList.Clear();
         }
 
         public void OnNotice(string notice, params object[] param)
         {
             if (notice == NoticeName.OnAgentDead)
             {
-                AgentList.Update();// 更新当日参与EGO分发的员工列表
+                AgentList.Update();
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {
@@ -82,7 +82,7 @@ namespace Creature
         public override void OnFixedUpdate(CreatureModel creature)
         {
             base.OnFixedUpdate(creature);
-            if (!Timer.started || !Timer.RunTimer()) // 计时器未启动/未到周期 → 跳过后续逻辑（每1s执行一次感染检测）
+            if (!infectionTimer.started || !infectionTimer.RunTimer()) // 计时器未启动/未到周期 → 跳过后续逻辑（每1s执行一次感染检测）
             {
                 return;
             }
@@ -90,8 +90,8 @@ namespace Creature
             {
                 animscript.StartCoroutine(RemoveInfectionShell());
             }
-            EnergyModel.instance.AddEnergy(creatureModels.Length);// 每秒固定增加1能量
-            Timer.StartTimer(1f);
+            EnergyModel.instance.AddEnergy(creatureModels.Length);// 每秒固定增加能量，增加值为当天异想体数量
+            infectionTimer.StartTimer(1f);
         }
         #endregion
 
@@ -177,22 +177,15 @@ namespace Creature
 
         #region 字段
         public EGODispatcherAnim animscript;
-        /// <summary>
-        /// 计时器：控制感染检测的周期
-        /// </summary>
-        private readonly Timer Timer = new Timer();
-        /// <summary>
-        /// 感染移除协程计数器：确保同一时间仅1个RemoveInfection协程运行，避免并发冲突
-        /// </summary>
+
+        private readonly Timer infectionTimer = new Timer();
+
+        // 感染移除协程计数器：确保同一时间仅1个RemoveInfection协程运行，避免并发冲突
         private int _infectionCounter = 0;
-        /// <summary>
-        /// 当日业务类型，决定不同场景的分支逻辑
-        /// </summary>
+
         private CreatureConsts.DayType _todayType;
 
-        /// <summary>
-        /// 当日所有异想体
-        /// </summary>
+        // 当日所有异想体
         private CreatureModel[] creatureModels;
 
         // 定义光头资源路径（与Bald类一致）

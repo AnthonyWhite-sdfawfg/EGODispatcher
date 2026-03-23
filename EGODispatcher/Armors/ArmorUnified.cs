@@ -15,13 +15,10 @@ namespace Armors
         public override void OnStageStart()
         {
             base.OnStageStart();
-            // 绑定当前装备的所属员工
             owner = model.owner;
             worker = owner as WorkerModel;
-            // 初始化战斗模式，避免空值逻辑异常
             currentMode = ArmorStructs.CombatMode.None;
-            // 加载当前战斗模式的参数，并启动恢复计时器
-            RestoreCombatParams(worker);
+            SetCombatParams(worker);
         }
 
         public override void OnFixedUpdate()
@@ -33,24 +30,20 @@ namespace Armors
                 return;
             }
 
-            // 根据员工是否恐慌，获取对应模式下的生命/精神恢复比例
             float ratioHP;
             float ratioMental;
             ArmorStructs.CombatParams combatParams = ArmorStructs.ModeToValues[currentMode];
             if (worker.IsPanic())
             {
-                ratioHP = combatParams.HpPanic;       // 恐慌状态下的生命恢复比例
-                ratioMental = combatParams.MpPanic;   // 恐慌状态下的精神恢复比例
+                ratioHP = combatParams.HpPanic;       
+                ratioMental = combatParams.MpPanic;   
             }
             else
             {
-                ratioHP = combatParams.HpNormal;      // 正常状态下的生命恢复比例
-                ratioMental = combatParams.MpNormal;  // 正常状态下的精神恢复比例
+                ratioHP = combatParams.HpNormal;      
+                ratioMental = combatParams.MpNormal;  
             }
-
-            // 执行恢复逻辑
             ArmorMethods.HealThisWorker(worker, ratioHP, ratioMental);
-            // 重置恢复计时器，进入下一个周期
             HealTimer.StartTimer(timerInterval);
         }
 
@@ -58,17 +51,14 @@ namespace Armors
         {
             DefenseInfo defenseInfo = base.GetDefense(actor).Copy();
 
-            // 计算生命/精神阈值（最大值 * 阈值比例）
             hpMark = actor.maxHp * ArmorConsts.DEFENSE_MARK_RATIO;
             mpMark = actor.maxMental * ArmorConsts.DEFENSE_MARK_RATIO;
 
-            // 生命低于阈值 → R/P 抗性改为免疫
             if (actor.hp < hpMark)
             {
                 defenseInfo.R = 0f;
                 defenseInfo.P = 0f;
             }
-            // 精神低于阈值 → W/B 抗性改为吸收（-0.1）
             if (actor.mental < mpMark)
             {
                 defenseInfo.W = -0.1f;
@@ -80,7 +70,6 @@ namespace Armors
 
         public override void OnPrepareWeapon(UnitModel actor)
         {
-            // 满足屏障添加条件 → 挂载准备阶段屏障Buff
             if (ArmorMethods.ShouldAddBarrier(actor))
             {
                 actor.AddUnitBuf(new BarrierBuf(
@@ -89,18 +78,13 @@ namespace Armors
                     ArmorConsts.BARRIER_ON_PREPARE_DURATION
                 ));
             }
-            // 挂载移速加成Buff
-            actor.AddUnitBuf(CreateSpeedBuf());
-
+            actor.AddUnitBuf(CreateSpeedBuf(ArmorConsts.SPEED_BUF_DURATION, ArmorConsts.SPEED_BUF_VALUE));
             base.OnPrepareWeapon(actor);
         }
 
         public override bool OnTakeDamage(UnitModel actor, ref DamageInfo dmg)
         {
-            // 所属单位为空 → 直接返回
             if (owner == null) return false;
-
-            // 满足屏障添加条件 → 挂载受击屏障Buff，并拦截本次伤害
             if (ArmorMethods.ShouldAddBarrier(actor))
             {
                 actor.AddUnitBuf(new BarrierBuf(
@@ -110,68 +94,44 @@ namespace Armors
                 ));
                 return false;
             }
-
             return base.OnTakeDamage(actor, ref dmg);
         }
         #endregion
 
         #region 私有工具方法
-        /// <summary>
-        /// 更新当前战斗模式对应的参数
-        /// </summary>
-        private void RestoreCombatParams(WorkerModel worker)
+
+        private void SetCombatParams(WorkerModel worker)
         {
-            // 重新解析并更新当前战斗模式
             currentMode = ArmorMethods.ResolveCombatMode(worker);
-            // 根据战斗模式获取对应的计时器间隔
             timerInterval = ArmorStructs.ModeToValues[currentMode].TimerInterval;
-            // 启动计时器
             HealTimer.StartTimer(timerInterval);
         }
 
-        /// <summary>
-        /// 创建移速加成Buff
-        /// </summary>
-        private UnitStatBuf CreateSpeedBuf()
+        private UnitStatBuf CreateSpeedBuf(float duration, float value)
         {
-            return new UnitStatBuf(ArmorConsts.SPEED_BUF_DURATION, UnitBufType.ADD_SUPERARMOR)
+            return new UnitStatBuf(duration, UnitBufType.ADD_SUPERARMOR)
             {
                 duplicateType = BufDuplicateType.ONLY_ONE, 
-                movementSpeed = ArmorConsts.SPEED_BUF_VALUE 
+                movementSpeed = value 
             };
         }
         #endregion
 
         #region 私有字段
-        /// <summary>
-        /// 回血计时器间隔（秒），由当前战斗模式（CombatMode）动态决定
-        /// </summary>
+        // 单位：秒；值由当前 CombatMode 决定
         private float timerInterval;
 
-        /// <summary>
-        /// 生命阈值（maxHp * DEFENSE_MARK_RATIO），低于该值时修改防御抗性
-        /// </summary>
+        // 低于此阈值时修改防御抗性，计算方式：maxHp * DEFENSE_MARK_RATIO
         private float hpMark;
-
-        /// <summary>
-        /// 精神阈值（maxMental * DEFENSE_MARK_RATIO），低于该值时修改防御抗性
-        /// </summary>
         private float mpMark;
 
-        /// <summary>
-        /// 恢复计时器，控制恢复逻辑的执行周期
-        /// </summary>
         private readonly Timer HealTimer = new Timer();
 
-        /// <summary>
-        /// 当前绑定的员工，用于获取战斗状态/执行恢复逻辑
-        /// </summary>
+        // 当前战斗中的员工及其所属单位
         private WorkerModel worker;
         private UnitModel owner;
 
-        /// <summary>
-        /// 当前所处的战斗模式（职位），用于匹配对应的恢复/计时器参数
-        /// </summary>
+        // 当前模式，用于匹配恢复参数
         private ArmorStructs.CombatMode currentMode;
         #endregion
     }

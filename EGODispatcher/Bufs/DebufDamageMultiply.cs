@@ -27,7 +27,7 @@ namespace Bufs
 		{
 			return multiply; // 直接返回伤害的倍率
 		}
-		public override void OnUnitDie() // 死亡后销毁
+		public override void OnUnitDie()
 		{
 			base.OnUnitDie();
 			Destroy();
