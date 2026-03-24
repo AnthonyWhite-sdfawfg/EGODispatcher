@@ -8,7 +8,7 @@ namespace Weapons
 	{
 		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
-			this.dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
+			this.dmgType = WeaponUtils.GetWeakestDefenseType(target);
             return base.OnAttackStart(actor, target);
 		}
         public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)

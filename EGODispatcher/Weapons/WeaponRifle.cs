@@ -9,7 +9,7 @@ namespace Weapons
 	{
 		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
-			dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
+			dmgType = WeaponUtils.GetWeakestDefenseType(target);
 			List<DamageInfo> list = new List<DamageInfo>();
 			for (int i = 0; i < 3; i++)
 			{

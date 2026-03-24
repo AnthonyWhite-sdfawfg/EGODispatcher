@@ -7,8 +7,52 @@ using UnityEngine;
 
 namespace Utils
 {
-    public static class CreatureMethods
+    public static class CreatureUtils
     {
+        #region 数据结构
+
+        // Attachment套装
+        public static readonly int[] GiftWorker = new int[] { 82101 };
+        public static readonly int[] GiftOperative = new int[] { 82201, 82202, 82203 };
+        public static readonly int[] GiftKeterCrewMember = new int[] { 82301, 82302, 82303, 82202 };
+        public static readonly int[] GiftDefault = new int[] { 82400 };
+
+        // 感染Buf数组
+        public static readonly UnitBufType[] InfectionBufTypes =
+       {
+            UnitBufType.SLIMEGIRL_LOVER,
+            UnitBufType.VISCUSSNAAKE_INFESTED,
+            UnitBufType.QUEENBEE_SPORE
+        };
+
+        // 装备生成清单（ID,数量）
+        public static readonly Dictionary<int, int> EquipmentPlan = new Dictionary<int, int>
+        {
+            // 护甲 unified
+            { 81111, 5 },{ 81112, 5 },{ 81113, 5 },{ 81114, 5 },{ 81115, 5 },
+            { 81116, 5 },{ 81117, 5 },{ 81118, 5 },{ 81119, 5 },{ 81120, 5 },
+            { 81121, 5 },
+            // 武器
+            { 83111, 5 },{ 83112, 5 },{ 83113, 5 },{ 83114, 5 },{ 83115, 5 },{ 83116, 5 },// 手枪
+            { 83211, 5 },{ 83212, 5 },{ 83213, 5 },{ 83214, 5 },// 步枪
+            { 83311, 5 },{ 83321, 1 }//keter crew：霰弹枪、链锯
+        };
+
+        // 每日类型判定
+        public enum DayType
+        {
+            NONE,      // 普通日子
+            MALKUTH,   // Malkuth 核心抑制
+            YESOD,     // Yesod 核心抑制
+            NETZACH,   // Netzach 核心抑制
+            HOD,       // Hod 核心抑制
+            D47        // Day 47 构筑部（Kether E1）
+        }
+
+        #endregion
+
+        #region 方法
+
         /// <summary>
         /// [ExoSuit]迭代器，生成所有 EXOSuit 装备
         /// </summary>   
@@ -59,18 +103,18 @@ namespace Utils
         /// </summary>
         public static int[] ResolveID(AgentModel ag)
         {
-            switch (EquipmentTypeInfo.GetLcId(ag.Equipment.weapon.metaInfo).id / ArmorConsts.ID_DIGIT % 10)
+            switch (EquipmentTypeInfo.GetLcId(ag.Equipment.weapon.metaInfo).id / ArmorUtils.ID_DIGIT % 10)
             {
                 case 1:
-                    return CreatureConsts.GiftWorker;
+                    return GiftWorker;
                 case 2:
-                    return CreatureConsts.GiftOperative;
+                    return GiftOperative;
                 case 3:
-                    return CreatureConsts.GiftKeterCrewMember;
+                    return GiftKeterCrewMember;
                 case 4:
-                    return CreatureConsts.GiftKeterCrewMember;
+                    return GiftKeterCrewMember;
                 default:
-                    return CreatureConsts.GiftDefault;
+                    return GiftDefault;
             }
         }
 
@@ -80,7 +124,7 @@ namespace Utils
         public static void RemoveInfection(AgentModel agent)
         {
             if (agent == null) return;
-            foreach (UnitBufType type in CreatureConsts.InfectionBufTypes)
+            foreach (UnitBufType type in InfectionBufTypes)
             {
                 UnitBuf buf = agent.GetUnitBufByType(type);
                 if (buf != null)
@@ -96,30 +140,30 @@ namespace Utils
         /// <summary>
         /// [通用]取今日类型
         /// </summary>
-        public static CreatureConsts.DayType GetTodayType()
+        public static DayType GetTodayType()
         {
             var mgr = SefiraBossManager.Instance;
 
             // Day 47 构筑部（Kether-E1）
             if (mgr.IsKetherBoss(KetherBossType.E1))
-                return CreatureConsts.DayType.D47;
+                return DayType.D47;
             // 各核心抑制
             if (mgr.CheckBossActivation(SefiraEnum.MALKUT))
-                return CreatureConsts.DayType.MALKUTH;
+                return DayType.MALKUTH;
             if (mgr.CheckBossActivation(SefiraEnum.YESOD))
-                return CreatureConsts.DayType.YESOD;
+                return DayType.YESOD;
             if (mgr.CheckBossActivation(SefiraEnum.NETZACH))
-                return CreatureConsts.DayType.NETZACH;
+                return DayType.NETZACH;
             if (mgr.CheckBossActivation(SefiraEnum.HOD))
-                return CreatureConsts.DayType.HOD;
+                return DayType.HOD;
 
-            return CreatureConsts.DayType.NONE;
+            return DayType.NONE;
         }
 
         /// <summary>
         /// [Netzach]解锁恢复机制
         /// </summary>
-        public static void TryUnlockRecover(CreatureConsts.DayType TodayType)
+        public static void TryUnlockRecover(DayType TodayType)
         {
             var mgr = SefiraBossManager.Instance;
             if (mgr.IsRecoverBlocked)
@@ -229,6 +273,25 @@ namespace Utils
             }
         }
 
+        /// <summary>
+        /// [EGODispatcher]更改员工发型
+        /// </summary>
+        /// <param name="target"></param>
+        public static void MakeBald(WorkerModel target)
+        {
+            Sprite BALD_FRONT_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Front/Bald");
+            Sprite BALD_REAR_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Rear/RearHair_Transparent");
+            WorkerSprite.WorkerSpriteSaveData.Pair BALD_PAIR = new WorkerSprite.WorkerSpriteSaveData.Pair(0, 0);
 
+            target.spriteData.FrontHair = BALD_FRONT_SPRITE;
+            target.spriteData.RearHair = BALD_REAR_SPRITE;
+            target.spriteData.saveData.FrontHair = BALD_PAIR;
+            target.spriteData.saveData.RearHair = BALD_PAIR;
+
+            target.GetWorkerUnit().spriteSetter.ChangeBasicSpriteData();
+        }
+
+        #endregion 
     }
+
 }

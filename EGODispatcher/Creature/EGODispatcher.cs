@@ -34,12 +34,12 @@ namespace Creature
             AgentModel agent = skill.agent;
             if (agent.HasEquipment(83400))// 83400：原型武器装备ID - 工作时若配备原型武器，则分发装备
             {
-                animscript.StartCoroutine(CreatureMethods.SpawnEquipmentsToInventory(CreatureConsts.EquipmentPlan));
+                animscript.StartCoroutine(CreatureMethods.SpawnEquipmentsToInventory(CreatureUtils.EquipmentPlan));
             }
             if (agent.HasEquipment(83211))// 83211：特定批次步枪装备ID - 工作时如若配备步枪的特定批次(游戏中存在标识)，则分发饰品 & 统一员工发型
             {
                 animscript.StartCoroutine(CreatureMethods.BatchProcess(CreatureMethods.DistributeGiftToAgent));
-                animscript.StartCoroutine(CreatureMethods.BatchProcess(MakeBald));
+                animscript.StartCoroutine(CreatureMethods.BatchProcess(CreatureMethods.MakeBald));
             }
             animscript.StartCoroutine(CreatureMethods.CreatureProcess(creatureModels)); //每次工作后增加所有异想体的计数器和 pebox
         }
@@ -61,12 +61,12 @@ namespace Creature
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {
                 // 仅 Malkuth 或 Day47 才更新工作映射
-                if (_todayType == CreatureConsts.DayType.MALKUTH || _todayType == CreatureConsts.DayType.D47)
+                if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
                 {
                     CreatureMethods.LogWorkMap();
                 }
                 // 仅 Yesod 或 Day47 才销毁滤镜
-                if (_todayType == CreatureConsts.DayType.D47 || _todayType == CreatureConsts.DayType.YESOD)
+                if (_todayType == CreatureUtils.DayType.D47 || _todayType == CreatureUtils.DayType.YESOD)
                 {
                     int level = CreatureOverloadManager.instance.GetQliphothOverloadLevel();
                     if (level >= 2)
@@ -82,7 +82,7 @@ namespace Creature
         public override void OnFixedUpdate(CreatureModel creature)
         {
             base.OnFixedUpdate(creature);
-            if (!infectionTimer.started || !infectionTimer.RunTimer()) // 计时器未启动/未到周期 → 跳过后续逻辑（每1s执行一次感染检测）
+            if (!infectionTimer.started || !infectionTimer.RunTimer()) // 计时器未启动/未到周期 → 跳过后续逻辑（周期为1s）
             {
                 return;
             }
@@ -90,7 +90,7 @@ namespace Creature
             {
                 animscript.StartCoroutine(RemoveInfectionShell());
             }
-            EnergyModel.instance.AddEnergy(creatureModels.Length);// 每秒固定增加能量，增加值为当天异想体数量
+            EnergyModel.instance.AddEnergy(creatureModels.Length);// 每周期固定增加能量，增加值为当天异想体数量
             infectionTimer.StartTimer(1f);
         }
         #endregion
@@ -103,13 +103,13 @@ namespace Creature
         {
             yield return new WaitForSeconds(delayTime);
             Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher]今日类型:{0}", _todayType.ToString()) });
-            if (_todayType == CreatureConsts.DayType.MALKUTH || _todayType == CreatureConsts.DayType.D47)
+            if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
             {
                 CreatureMethods.LogWorkMap();
             }
-            if (_todayType == CreatureConsts.DayType.YESOD || _todayType == CreatureConsts.DayType.D47)
+            if (_todayType == CreatureUtils.DayType.YESOD || _todayType == CreatureUtils.DayType.D47)
             {
-                this.animscript.StartCoroutine(CreatureMethods.ClearPixelDelayed());
+                animscript.StartCoroutine(CreatureMethods.ClearPixelDelayed());
             }
             yield break;
         }
@@ -155,23 +155,6 @@ namespace Creature
         }
 
 
-        /// <summary>
-        /// 将员工变秃（修改为48号光头）
-        /// </summary>
-        private void MakeBald(WorkerModel target)
-        {
-            // 1. 修改运行时 sprite 引用
-            target.spriteData.FrontHair = BALD_FRONT_SPRITE;
-            target.spriteData.RearHair = BALD_REAR_SPRITE;
-
-            // 2. 修改存档数据（关键：Pair(0,0) 对应48号光头）
-            target.spriteData.saveData.FrontHair = BALD_PAIR;
-            target.spriteData.saveData.RearHair = BALD_PAIR;
-
-            // 3. 立即更新外观
-            target.GetWorkerUnit().spriteSetter.ChangeBasicSpriteData();
-
-        }
 
         #endregion
 
@@ -183,18 +166,10 @@ namespace Creature
         // 感染移除协程计数器：确保同一时间仅1个RemoveInfection协程运行，避免并发冲突
         private int _infectionCounter = 0;
 
-        private CreatureConsts.DayType _todayType;
+        private CreatureUtils.DayType _todayType;
 
         // 当日所有异想体
         private CreatureModel[] creatureModels;
-
-        // 定义光头资源路径（与Bald类一致）
-        private static readonly Sprite BALD_FRONT_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Front/Bald");
-        private static readonly Sprite BALD_REAR_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Rear/RearHair_Transparent");
-
-        // 光头配置对应的游戏内编号48
-        private static readonly WorkerSprite.WorkerSpriteSaveData.Pair BALD_PAIR = new WorkerSprite.WorkerSpriteSaveData.Pair(0, 0);
-
 
         #endregion
     }

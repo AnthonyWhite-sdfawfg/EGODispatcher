@@ -9,9 +9,9 @@ namespace Weapons
 	{
 		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
-            if (WeaponMethods.HasImmuneDefense(target)) {
+            if (WeaponUtils.HasImmuneDefense(target)) {
                 overrideDamageType = true;
-                dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
+                dmgType = WeaponUtils.GetWeakestDefenseType(target);
             }
             else {
                 overrideDamageType = false;

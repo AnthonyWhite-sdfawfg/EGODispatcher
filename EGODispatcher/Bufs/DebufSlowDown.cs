@@ -5,7 +5,7 @@ namespace Bufs
     public class DebufSlowDown : UnitBuf
 	{
         /// <summary>
-        /// 此处只能借用尸山EGO“笑靥”的减速debuf的UnitBufType，
+        /// 此处借用了尸山EGO“笑靥”的减速debuf的UnitBufType，
         /// 因此会导致与尸山EGO“笑靥”的减速debuf冲突从而出现该武器及“笑靥”两者的debuf同时出现时，
         /// 其中一方创建的debuf会被另一方覆盖。（因为两者的duplicateType均为ONLY_ONE）
         /// </summary>

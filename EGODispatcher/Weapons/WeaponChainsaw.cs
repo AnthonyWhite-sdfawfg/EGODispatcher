@@ -11,10 +11,10 @@ namespace Weapons
 		{
 			List<DamageInfo> list = new List<DamageInfo>();
             
-			if (WeaponMethods.HasImmuneDefense(target))
+			if (WeaponUtils.HasImmuneDefense(target))
 			{
 				overrideDamageType = true;
-				dmgType = (RwbpType)WeaponMethods.GetWeakestDefenseType(target);
+				dmgType = WeaponUtils.GetWeakestDefenseType(target);
 				for (int i = 0; i < 25; i++)
 				{
 					list.Add(model.metaInfo.damageInfos[0].Copy());

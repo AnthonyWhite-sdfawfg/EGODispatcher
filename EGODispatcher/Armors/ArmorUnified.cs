@@ -7,7 +7,7 @@ namespace Armors
     /// 1. 根据员工当前战斗参数（CombatMode）动态调整恢复的周期与比例；
     /// 2. 生命值/精神值低于阈值时修改防御属性；
     /// 3. 武器准备/受击时触发屏障、移速加成等护甲特有效果；
-    /// 4. 所有数值常量/结构体/工具方法依赖 ArmorConsts/ArmorStructs/ArmorMethods 定义。
+    /// 4. 所有数值常量/结构体/工具方法依赖 ArmorUtils 定义。
     /// </summary>
     public class ArmorUnified : EquipmentScriptBase
     {
@@ -17,7 +17,7 @@ namespace Armors
             base.OnStageStart();
             owner = model.owner;
             worker = owner as WorkerModel;
-            currentMode = ArmorStructs.CombatMode.None;
+            currentMode = ArmorUtils.CombatMode.None;
             SetCombatParams(worker);
         }
 
@@ -32,7 +32,7 @@ namespace Armors
 
             float ratioHP;
             float ratioMental;
-            ArmorStructs.CombatParams combatParams = ArmorStructs.ModeToValues[currentMode];
+            ArmorUtils.CombatParams combatParams = ArmorUtils.ModeToValues[currentMode];
             if (worker.IsPanic())
             {
                 ratioHP = combatParams.HpPanic;       
@@ -43,7 +43,7 @@ namespace Armors
                 ratioHP = combatParams.HpNormal;      
                 ratioMental = combatParams.MpNormal;  
             }
-            ArmorMethods.HealThisWorker(worker, ratioHP, ratioMental);
+            ArmorUtils.HealThisWorker(worker, ratioHP, ratioMental);
             HealTimer.StartTimer(timerInterval);
         }
 
@@ -51,8 +51,8 @@ namespace Armors
         {
             DefenseInfo defenseInfo = base.GetDefense(actor).Copy();
 
-            hpMark = actor.maxHp * ArmorConsts.DEFENSE_MARK_RATIO;
-            mpMark = actor.maxMental * ArmorConsts.DEFENSE_MARK_RATIO;
+            hpMark = actor.maxHp * ArmorUtils.DEFENSE_MARK_RATIO;
+            mpMark = actor.maxMental * ArmorUtils.DEFENSE_MARK_RATIO;
 
             if (actor.hp < hpMark)
             {
@@ -70,27 +70,27 @@ namespace Armors
 
         public override void OnPrepareWeapon(UnitModel actor)
         {
-            if (ArmorMethods.ShouldAddBarrier(actor))
+            if (ArmorUtils.ShouldAddBarrier(actor))
             {
                 actor.AddUnitBuf(new BarrierBuf(
                     RwbpType.A,
-                    ArmorConsts.BARRIER_ON_PREPARE_VALUE,
-                    ArmorConsts.BARRIER_ON_PREPARE_DURATION
+                    ArmorUtils.BARRIER_ON_PREPARE_VALUE,
+                    ArmorUtils.BARRIER_ON_PREPARE_DURATION
                 ));
             }
-            actor.AddUnitBuf(CreateSpeedBuf(ArmorConsts.SPEED_BUF_DURATION, ArmorConsts.SPEED_BUF_VALUE));
+            actor.AddUnitBuf(CreateSpeedBuf(ArmorUtils.SPEED_BUF_DURATION, ArmorUtils.SPEED_BUF_VALUE));
             base.OnPrepareWeapon(actor);
         }
 
         public override bool OnTakeDamage(UnitModel actor, ref DamageInfo dmg)
         {
             if (owner == null) return false;
-            if (ArmorMethods.ShouldAddBarrier(actor))
+            if (ArmorUtils.ShouldAddBarrier(actor))
             {
                 actor.AddUnitBuf(new BarrierBuf(
                     RwbpType.A,
-                    ArmorConsts.BARRIER_ON_HIT_VALUE,
-                    ArmorConsts.BARRIER_ON_HIT_DURATION
+                    ArmorUtils.BARRIER_ON_HIT_VALUE,
+                    ArmorUtils.BARRIER_ON_HIT_DURATION
                 ));
                 return false;
             }
@@ -102,8 +102,8 @@ namespace Armors
 
         private void SetCombatParams(WorkerModel worker)
         {
-            currentMode = ArmorMethods.ResolveCombatMode(worker);
-            timerInterval = ArmorStructs.ModeToValues[currentMode].TimerInterval;
+            currentMode = ArmorUtils.ResolveCombatMode(worker);
+            timerInterval = ArmorUtils.ModeToValues[currentMode].TimerInterval;
             HealTimer.StartTimer(timerInterval);
         }
 
@@ -132,7 +132,7 @@ namespace Armors
         private UnitModel owner;
 
         // 当前模式，用于匹配恢复参数
-        private ArmorStructs.CombatMode currentMode;
+        private ArmorUtils.CombatMode currentMode;
         #endregion
     }
 }
