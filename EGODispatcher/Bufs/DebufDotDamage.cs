@@ -4,7 +4,7 @@ namespace Bufs
 {
 	public class DebufDotDamage : UnitBuf
 	{
-        public DebufDotDamage(WeaponStructs.DotConfig config)
+        public DebufDotDamage(WeaponUtils.DotConfig config)
         {
             _overrideDamageType = config.overrideDamageType;
             _totalDuration = config.totalDuration;
