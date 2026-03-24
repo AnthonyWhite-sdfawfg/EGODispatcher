@@ -2,6 +2,9 @@
 
 namespace Bufs
 {
+    /// <summary>
+    /// Debuff，为敌对目标施加一个DOT伤害，以config结构体作为参数传入
+    /// </summary>
 	public class DebufDotDamage : UnitBuf
 	{
         public DebufDotDamage(WeaponUtils.DotConfig config)

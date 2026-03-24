@@ -2,6 +2,9 @@
 
 namespace Bufs
 {
+    /// <summary>
+    /// Debuff，为敌对目标施加一个受到伤害加倍的效果
+    /// </summary>
 	public class DebufDamageMultiply : UnitBuf
 	{
         /// <param name="reproducible">是否可以堆叠；</param>
