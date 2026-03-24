@@ -21,7 +21,7 @@ namespace Creature
             infectionTimer.StartTimer(1f); // 启动1s周期计时器
             RegisterNotice(); // 注册相关监听器
             _infectionCounter = 0;// 初始化感染协程计数器
-            _todayType = CreatureMethods.GetTodayType();// 获取当日业务类型
+            _todayType = CreatureUtils.GetTodayType();// 获取当日业务类型
             AgentList.Set();// 初始化当日参与EGO分发的员工列表
             creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
             animscript.StartCoroutine(DelaySetting4Log(0.5f));// 打印相关log，注册监听器需要时间，为保证log得以出现，故延时运行
@@ -30,18 +30,18 @@ namespace Creature
         public override void OnFinishWork(UseSkill skill)
         {
             base.OnFinishWork(skill);
-            CreatureMethods.TryUnlockRecover(_todayType); // 每次工作后解锁一次恢复机制（若锁定）
+            CreatureUtils.TryUnlockRecover(_todayType); // 每次工作后解锁一次恢复机制（若锁定）
             AgentModel agent = skill.agent;
             if (agent.HasEquipment(83400))// 83400：原型武器装备ID - 工作时若配备原型武器，则分发装备
             {
-                animscript.StartCoroutine(CreatureMethods.SpawnEquipmentsToInventory(CreatureUtils.EquipmentPlan));
+                animscript.StartCoroutine(CreatureUtils.SpawnEquipmentsToInventory(CreatureUtils.EquipmentPlan));
             }
             if (agent.HasEquipment(83211))// 83211：特定批次步枪装备ID - 工作时如若配备步枪的特定批次(游戏中存在标识)，则分发饰品 & 统一员工发型
             {
-                animscript.StartCoroutine(CreatureMethods.BatchProcess(CreatureMethods.DistributeGiftToAgent));
-                animscript.StartCoroutine(CreatureMethods.BatchProcess(CreatureMethods.MakeBald));
+                animscript.StartCoroutine(CreatureUtils.BatchProcess(CreatureUtils.DistributeGiftToAgent));
+                animscript.StartCoroutine(CreatureUtils.BatchProcess(CreatureUtils.MakeBald));
             }
-            animscript.StartCoroutine(CreatureMethods.CreatureProcess(creatureModels)); //每次工作后增加所有异想体的计数器和 pebox
+            animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels)); //每次工作后增加所有异想体的计数器和 pebox
         }
 
         public override void OnStageEnd()
@@ -63,7 +63,7 @@ namespace Creature
                 // 仅 Malkuth 或 Day47 才更新工作映射
                 if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
                 {
-                    CreatureMethods.LogWorkMap();
+                    CreatureUtils.LogWorkMap();
                 }
                 // 仅 Yesod 或 Day47 才销毁滤镜
                 if (_todayType == CreatureUtils.DayType.D47 || _todayType == CreatureUtils.DayType.YESOD)
@@ -71,10 +71,10 @@ namespace Creature
                     int level = CreatureOverloadManager.instance.GetQliphothOverloadLevel();
                     if (level >= 2)
                     {
-                        animscript.StartCoroutine(CreatureMethods.ClearPixelDelayed());
+                        animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed());
                     }
                 }
-                CreatureMethods.TryUnlockRecover(_todayType); // 每次融毁后解锁一次恢复机制（若锁定）
+                CreatureUtils.TryUnlockRecover(_todayType); // 每次融毁后解锁一次恢复机制（若锁定）
             }
         }
 
@@ -105,11 +105,11 @@ namespace Creature
             Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher]今日类型:{0}", _todayType.ToString()) });
             if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
             {
-                CreatureMethods.LogWorkMap();
+                CreatureUtils.LogWorkMap();
             }
             if (_todayType == CreatureUtils.DayType.YESOD || _todayType == CreatureUtils.DayType.D47)
             {
-                animscript.StartCoroutine(CreatureMethods.ClearPixelDelayed());
+                animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed());
             }
             yield break;
         }
@@ -126,7 +126,7 @@ namespace Creature
             try
             {
                 // 直接等待 Enumerators 里的纯迭代器
-                yield return CreatureMethods.BatchProcess(CreatureMethods.RemoveInfection);
+                yield return CreatureUtils.BatchProcess(CreatureUtils.RemoveInfection);
             }
             finally
             {

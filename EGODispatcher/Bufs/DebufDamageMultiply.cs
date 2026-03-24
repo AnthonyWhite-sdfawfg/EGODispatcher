@@ -25,7 +25,7 @@ namespace Bufs
 		}
 		public override float OnTakeDamage(UnitModel attacker, DamageInfo damageInfo)
 		{
-			return multiply; // 直接返回伤害的倍率
+			return multiply; // 直接返回伤害的倍率至父类进行运算
 		}
 		public override void OnUnitDie()
 		{
