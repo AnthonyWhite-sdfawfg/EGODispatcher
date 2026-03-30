@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Utils
 {
+    /// <summary>
+    /// AgentManager.instance.GetAgentList()取得结果既包括存活员工也包括死亡员工，因此建表来单独管理员工
+    /// </summary>
 	public static class AgentList
 	{
 		public static ReadOnlyCollection<AgentModel> Agents
@@ -29,7 +32,7 @@ namespace Utils
 			activeAgents.Clear();
 		}
 
-        public static void Remove()
+        public static void RemoveDeadAgents()
         {
             // 从后向前遍历，安全移除死亡或空引用
             for (int i = activeAgents.Count - 1; i >= 0; i--)

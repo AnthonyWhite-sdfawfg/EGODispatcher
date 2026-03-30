@@ -46,6 +46,16 @@ namespace Utils
             }
         };
 
+        public static readonly Dictionary<CombatMode, int[]> CombatModeToGiftMap = new Dictionary<CombatMode, int[]>
+        {
+            { CombatMode.Worker, CreatureUtils.GiftWorker },
+            { CombatMode.Operative, CreatureUtils.GiftOperative },
+            { CombatMode.KeterCrewMember, CreatureUtils.GiftKeterCrewMember },
+            { CombatMode.Prototype, CreatureUtils.GiftKeterCrewMember }, // 和原逻辑一致：case4对应Keter套装
+            { CombatMode.None, CreatureUtils.GiftDefault }
+        };
+
+
         public struct CombatParams
         {
             /// <param name="timerInterval">恢复的时间间隔，单位为秒</param>

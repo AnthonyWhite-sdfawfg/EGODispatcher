@@ -22,7 +22,7 @@ namespace Creature
             RegisterNotice(); // 注册相关监听器
             _infectionCounter = 0;// 初始化感染协程计数器
             _todayType = CreatureUtils.GetTodayType();// 获取当日业务类型
-            AgentList.Set();// 初始化当日参与EGO分发的员工列表
+            AgentList.Set();// 初始化员工列表
             creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
             animscript.StartCoroutine(DelaySetting4Log(0.5f));// 打印相关log，注册监听器需要时间，为保证log得以出现，故延时运行
         }
@@ -56,7 +56,7 @@ namespace Creature
         {
             if (notice == NoticeName.OnAgentDead)
             {
-                AgentList.Remove();
+                AgentList.RemoveDeadAgents();
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {

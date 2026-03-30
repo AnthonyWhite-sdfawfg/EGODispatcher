@@ -99,23 +99,23 @@ namespace Utils
         }
 
         /// <summary>
-        ///  [ExoSuit]与 Armor 体系同样的解析ID
+        ///  [ExoSuit]复用ArmorUtils解析并通过映射取数组
         /// </summary>
+        // CreatureUtils.cs
         public static int[] ResolveID(AgentModel ag)
         {
-            switch (EquipmentTypeInfo.GetLcId(ag.Equipment.weapon.metaInfo).id / ArmorUtils.ID_DIGIT % 10)
+            // 第一步：复用ArmorUtils的逻辑解析出CombatMode
+            WorkerModel workerModel = ag as WorkerModel;
+            ArmorUtils.CombatMode mode = ArmorUtils.ResolveCombatMode(workerModel);
+
+            // 第二步：通过映射字典直接获取饰品数组
+            if (ArmorUtils.CombatModeToGiftMap.TryGetValue(mode, out int[] giftIds))
             {
-                case 1:
-                    return GiftWorker;
-                case 2:
-                    return GiftOperative;
-                case 3:
-                    return GiftKeterCrewMember;
-                case 4:
-                    return GiftKeterCrewMember;
-                default:
-                    return GiftDefault;
+                return giftIds;
             }
+
+            // 兜底返回默认套装
+            return GiftDefault;
         }
 
         /// <summary>

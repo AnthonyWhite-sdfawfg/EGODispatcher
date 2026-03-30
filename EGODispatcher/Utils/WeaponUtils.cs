@@ -8,9 +8,8 @@ namespace Utils
         #region 方法
 
         /// <summary>
-        /// 取目标的最弱抗性
+        /// 取目标的最弱抗性(数值越大越弱，越小越强，0代表免疫，负值代表吸收)
         /// </summary>
-        //需注意，游戏设定是抗性值越大反而说明抗性越弱，抗性为0则为免疫，抗性为负则为吸收
         public static RwbpType GetWeakestDefenseType(UnitModel target)
         {
             float r = target.defense.R;
