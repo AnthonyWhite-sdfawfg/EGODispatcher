@@ -51,7 +51,7 @@ namespace Utils
             { CombatMode.Worker, CreatureUtils.GiftWorker },
             { CombatMode.Operative, CreatureUtils.GiftOperative },
             { CombatMode.KeterCrewMember, CreatureUtils.GiftKeterCrewMember },
-            { CombatMode.Prototype, CreatureUtils.GiftKeterCrewMember }, // 和原逻辑一致：case4对应Keter套装
+            { CombatMode.Prototype, CreatureUtils.GiftKeterCrewMember }, 
             { CombatMode.None, CreatureUtils.GiftDefault }
         };
 

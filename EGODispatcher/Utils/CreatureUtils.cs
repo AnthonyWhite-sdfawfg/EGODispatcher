@@ -101,20 +101,14 @@ namespace Utils
         /// <summary>
         ///  [ExoSuit]复用ArmorUtils解析并通过映射取数组
         /// </summary>
-        // CreatureUtils.cs
         public static int[] ResolveID(AgentModel ag)
         {
-            // 第一步：复用ArmorUtils的逻辑解析出CombatMode
             WorkerModel workerModel = ag as WorkerModel;
             ArmorUtils.CombatMode mode = ArmorUtils.ResolveCombatMode(workerModel);
-
-            // 第二步：通过映射字典直接获取饰品数组
             if (ArmorUtils.CombatModeToGiftMap.TryGetValue(mode, out int[] giftIds))
             {
                 return giftIds;
             }
-
-            // 兜底返回默认套装
             return GiftDefault;
         }
 

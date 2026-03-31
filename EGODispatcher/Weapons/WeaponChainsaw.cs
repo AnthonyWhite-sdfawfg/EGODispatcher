@@ -9,8 +9,8 @@ namespace Weapons
 	{
 		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
+
 			List<DamageInfo> list = new List<DamageInfo>();
-            
 			if (WeaponUtils.HasImmuneDefense(target))
 			{
 				overrideDamageType = true;
@@ -32,6 +32,7 @@ namespace Weapons
 			}
 			return new WeaponDamageInfo(animationName, list.ToArray());
 		}
+
         public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
         {
             if (overrideDamageType)
@@ -41,6 +42,7 @@ namespace Weapons
             target.AddUnitBuf(new DebufDamageMultiply(true, 2f, 5f));
             return base.OnGiveDamage(actor, target, ref dmg);
         }
+
         private string animationName;
         private bool overrideDamageType;
 		private RwbpType dmgType;
