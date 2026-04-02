@@ -268,7 +268,7 @@ namespace Utils
         }
 
         /// <summary>
-        /// [EGODispatcher]更改员工发型
+        /// [EGODispatcher]头盔贴图无法完全覆盖发型贴图，所以固定修改为光头
         /// </summary>
         /// <param name="target"></param>
         public static void MakeBald(WorkerModel target)

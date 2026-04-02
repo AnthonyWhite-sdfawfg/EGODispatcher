@@ -7,6 +7,7 @@ namespace Bufs
     /// </summary>
 	public class DebufDotDamage : UnitBuf
 	{
+        /// <param name="config">DOT伤害相关参数，以struct的形式传入</param>
         public DebufDotDamage(WeaponUtils.DotConfig config)
         {
             _overrideDamageType = config.overrideDamageType;

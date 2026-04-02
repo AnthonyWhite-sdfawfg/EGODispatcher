@@ -117,7 +117,7 @@ namespace Creature
 
         /// <summary>
         /// 感染移除协程的安全外壳：通过计数器控制并发，确保同一时间仅1个运行RemoveInfection的BatchProcess协程存在；
-        /// 即使计时器1s触发一次，仍需计数器以避免RemoveInfection执行时长超过1s导致多协程冲突
+        /// 即使计时器1s触发一次，仍需计数器进行控制以避免RemoveInfection执行时长超过1s导致多协程冲突
         /// </summary>
         /// <param name="batch">单次处理的Agent数量</param>
         private IEnumerator RemoveInfectionShell()
