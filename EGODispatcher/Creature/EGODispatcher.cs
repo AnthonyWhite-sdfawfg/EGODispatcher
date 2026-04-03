@@ -38,8 +38,8 @@ namespace Creature
             }
             if (agent.HasEquipment(83211))// 83211：特定批次步枪装备ID - 工作时如若配备步枪的特定批次(游戏中存在标识)，则分发饰品 & 统一员工发型
             {
-                animscript.StartCoroutine(CreatureUtils.BatchProcess(CreatureUtils.DistributeGiftToAgent));
-                animscript.StartCoroutine(CreatureUtils.BatchProcess(CreatureUtils.MakeBald));
+                animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.DistributeGiftToAgent));
+                animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.MakeBald));
             }
             animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels)); //每次工作后增加所有异想体的计数器和 pebox
         }
@@ -120,13 +120,13 @@ namespace Creature
         /// 即使计时器1s触发一次，仍需计数器进行控制以避免RemoveInfection执行时长超过1s导致多协程冲突
         /// </summary>
         /// <param name="batch">单次处理的Agent数量</param>
-        private IEnumerator RemoveInfectionShell()
+        private IEnumerator RemoveInfectionShell(int batch = 5)
         {
             _infectionCounter++;
             try
             {
                 // 直接等待 Enumerators 里的纯迭代器
-                yield return CreatureUtils.BatchProcess(CreatureUtils.RemoveInfection);
+                yield return CreatureUtils.AgentBatchProcess(CreatureUtils.RemoveInfection, batch);
             }
             finally
             {

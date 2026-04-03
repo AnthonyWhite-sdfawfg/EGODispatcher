@@ -248,14 +248,14 @@ namespace Utils
         /// <summary>
         /// [批处理协程]处理全体员工时使用：以5个员工为一组进行处理；
         /// </summary>
-        public static IEnumerator BatchProcess(Action<AgentModel> processAction)
+        public static IEnumerator AgentBatchProcess(Action<AgentModel> processAction, int batch = 5)
         {
             List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
             if (snapshot.Count == 0) yield break;
 
-            for (int i = 0; i < snapshot.Count; i += 5)
+            for (int i = 0; i < snapshot.Count; i += batch)
             {
-                int end = System.Math.Min(i + 5, snapshot.Count);
+                int end = System.Math.Min(i + batch, snapshot.Count);
                 for (int j = i; j < end; j++)
                 {
                     AgentModel ag = snapshot[j];
