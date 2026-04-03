@@ -246,7 +246,7 @@ namespace Utils
 
 
         /// <summary>
-        /// [批处理协程]处理全体员工时使用：以5个员工为一组进行处理；
+        /// [批处理协程]处理全体员工时使用：依据传参数量分组进行处理；
         /// </summary>
         public static IEnumerator AgentBatchProcess(Action<AgentModel> processAction, int batch = 5)
         {
