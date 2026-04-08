@@ -21,6 +21,7 @@ namespace Creature
             infectionTimer.StartTimer(1f); // 启动1s周期计时器
             RegisterNotice(); // 注册相关监听器
             _infectionCounter = 0;// 初始化感染协程计数器
+            _deathCounter = 0;
             _todayType = CreatureUtils.GetTodayType();// 获取当日业务类型
             AgentList.Set();// 初始化员工列表
             creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
@@ -57,6 +58,14 @@ namespace Creature
             if (notice == NoticeName.OnAgentDead)
             {
                 AgentList.RemoveDeadAgents();
+                /*
+                
+                _deathCounter++;
+                if (_deathCounter >= 5) {
+                    animscript.StartCoroutine(RemoveInfectionShell());
+                }
+
+                */
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {
@@ -120,7 +129,7 @@ namespace Creature
         /// 即使计时器1s触发一次，仍需计数器进行控制以避免RemoveInfection执行时长超过1s导致多协程冲突
         /// </summary>
         /// <param name="batch">单次处理的Agent数量</param>
-        private IEnumerator RemoveInfectionShell(int batch = 5)
+        private IEnumerator RemoveInfectionShell(int batch = CreatureUtils.DEFAULT_BATCH_SIZE)
         {
             _infectionCounter++;
             try
@@ -170,6 +179,8 @@ namespace Creature
 
         // 当日所有异想体
         private CreatureModel[] creatureModels;
+
+        private int _deathCounter = 0;
 
         #endregion
     }

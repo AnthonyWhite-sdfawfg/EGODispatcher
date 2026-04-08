@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Bufs;
 using Utils;
 
 namespace Weapons
 {
-	public class WeaponChainsaw : EquipmentScriptBase
+    public class WeaponChainsaw : EquipmentScriptBase
 	{
 		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{

@@ -9,6 +9,12 @@ namespace Utils
 {
     public static class CreatureUtils
     {
+        #region 常量字段
+
+        public const int DEFAULT_BATCH_SIZE = 5;
+
+        #endregion
+
         #region 数据结构
 
         // Attachment套装
@@ -99,7 +105,7 @@ namespace Utils
         }
 
         /// <summary>
-        ///  [ExoSuit]复用ArmorUtils解析并通过映射取数组
+        /// [ExoSuit]复用ArmorUtils解析并通过映射取数组
         /// </summary>
         public static int[] ResolveID(AgentModel ag)
         {
@@ -248,7 +254,7 @@ namespace Utils
         /// <summary>
         /// [批处理协程]处理全体员工时使用：依据传参数量分组进行处理；
         /// </summary>
-        public static IEnumerator AgentBatchProcess(Action<AgentModel> processAction, int batch = 5)
+        public static IEnumerator AgentBatchProcess(Action<AgentModel> processAction, int batch = DEFAULT_BATCH_SIZE)
         {
             List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
             if (snapshot.Count == 0) yield break;
@@ -270,7 +276,6 @@ namespace Utils
         /// <summary>
         /// [EGODispatcher]头盔贴图无法完全覆盖发型贴图，所以固定修改为光头
         /// </summary>
-        /// <param name="target"></param>
         public static void MakeBald(WorkerModel target)
         {
             Sprite BALD_FRONT_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Front/Bald");
