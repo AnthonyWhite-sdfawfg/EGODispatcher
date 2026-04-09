@@ -7,7 +7,7 @@ namespace Bufs
     /// 此Debuff借用了尸山EGO“笑靥”的减速debuff的UnitBufType，
     /// 因此会导致与尸山EGO“笑靥”的减速debuff冲突，
     /// 从而出现该武器及“笑靥”两者的debuff同时出现时，
-    /// 其中一方创建的debuff会被另一方覆盖。（因为两者的duplicateType均为ONLY_ONE）
+    /// 其中一方创建的debuff会被另一方覆盖。
     /// </summary>
     public class DebufSlowDown : UnitBuf
 	{
@@ -27,7 +27,7 @@ namespace Bufs
 			UnitBuf unitBufByType = model.GetUnitBufByType(UnitBufType.DANGO_CREATURE_WEAPON_SLOW_SPECIAL);
 			if (unitBufByType != null)
 			{
-				model.RemoveUnitBuf(unitBufByType);
+				model.RemoveUnitBuf(unitBufByType); // 此处会移除原有的debuff
 			}
 			if (model is CreatureModel)
 			{

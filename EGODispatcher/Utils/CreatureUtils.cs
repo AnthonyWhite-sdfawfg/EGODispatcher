@@ -180,8 +180,8 @@ namespace Utils
         {
             var mgr = SefiraBossManager.Instance;
             int[] map = new int[4];
-            for (int i = 1; i <= 4; i++)
-                map[i - 1] = mgr.GetWorkId(i);
+            for (int i = 0; i < 4; i++)
+                map[i] = mgr.GetWorkId(i);
             return map;
         }
 
