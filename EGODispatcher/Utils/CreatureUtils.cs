@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using LobotomyBaseMod;
 using UnityEngine;
+using Bufs;
 
 namespace Utils
 {
@@ -135,6 +136,11 @@ namespace Utils
                     agent.GetWorkerUnit().RemoveUnitBuf(buf);
                 }
             }
+        }
+
+        public static void GetInvincibilityBuf(AgentModel agent)
+        {
+            agent.AddUnitBuf(new BufInvincible());
         }
 
         /// <summary>

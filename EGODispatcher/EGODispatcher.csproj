@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Armors\ArmorUnified.cs" />
+    <Compile Include="Bufs\BufInvincible.cs" />
     <Compile Include="Bufs\DebufDamageMultiply.cs" />
     <Compile Include="Bufs\DebufDotDamage.cs" />
     <Compile Include="Bufs\DebufSlowDown.cs" />

@@ -58,14 +58,11 @@ namespace Creature
             if (notice == NoticeName.OnAgentDead)
             {
                 AgentList.RemoveDeadAgents();
-                /*
-                
                 _deathCounter++;
                 if (_deathCounter >= 5) {
-                    animscript.StartCoroutine(RemoveInfectionShell());
+                    animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.GetInvincibilityBuf));
+                    Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 伤亡人数超出阈值，启用应急防护措施。" });
                 }
-
-                */
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {
@@ -162,8 +159,6 @@ namespace Creature
             Notice.instance.Remove(NoticeName.AddSystemLog, this);
             Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
         }
-
-
 
         #endregion
 
