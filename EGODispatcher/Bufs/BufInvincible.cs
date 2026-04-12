@@ -4,29 +4,30 @@
     {
         public BufInvincible()
         {
-            duplicateType = BufDuplicateType.ONLY_ONE; 
+            duplicateType = BufDuplicateType.ONLY_ONE;
             type = UnitBufType.ADD_SUPERARMOR;
         }
 
         public override void Init(UnitModel model)
         {
             base.Init(model);
-            if (model is WorkerModel worker)
-            {
-                worker.SetInvincible(true);
-            }
+            SwitchInvincible(true);
         }
 
         public override void OnStageRelease()
         {
-            RemoveInvincible();
+            SwitchInvincible(false);
         }
 
-        public void RemoveInvincible()
+        public void SwitchInvincible(bool flag)
         {
-            if (model is WorkerModel)
+            if (model is AgentModel agent)
             {
-                (model as WorkerModel).SetInvincible(false);
+                agent.cannotBeAttackTargetable = flag;
+                if (agent is WorkerModel worker)
+                {
+                    worker.SetInvincible(flag);
+                }
             }
         }
     }

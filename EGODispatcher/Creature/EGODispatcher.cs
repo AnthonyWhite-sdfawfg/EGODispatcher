@@ -59,7 +59,7 @@ namespace Creature
             {
                 AgentList.RemoveDeadAgents();
                 _deathCounter++;
-                if (_deathCounter >= 5) {
+                if (_deathCounter >= 2) {
                     animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.GetInvincibilityBuf));
                     Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 伤亡人数超出阈值，启用应急防护措施。" });
                 }
@@ -108,7 +108,7 @@ namespace Creature
         private IEnumerator DelaySetting4Log(float delayTime)
         {
             yield return new WaitForSeconds(delayTime);
-            Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher]今日类型:{0}", _todayType.ToString()) });
+            Notice.instance.Send("AddSystemLog", new object[] { string.Format("<color=#4B8A18>[EGODispatcher]今日类型:{0}</color>", _todayType.ToString()) });
             if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
             {
                 CreatureUtils.LogWorkMap();

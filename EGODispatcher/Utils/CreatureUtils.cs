@@ -199,7 +199,7 @@ namespace Utils
             int[] map = GetWorkMap();
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("[EGODispatcher] 工作映射已更新（当前过载等级 " + CreatureOverloadManager.instance.GetQliphothOverloadLevel() + "）:");
-            string[] name = { "<color=red>本能</color>", "<color=white>洞察</color>", "<color=magenta>沟通</color>", "<color=cyan>压迫</color>" };
+            string[] name = { "<color=#D92B3B>本能</color>", "<color=F2F0D0>洞察</color>", "<color=A057A0>沟通</color>", "<color=4ECDC4>压迫</color>" };
             for (int i = 0; i < 4; i++)
                 sb.AppendLine(string.Format("  [{0}] {1} → {2}", i + 1, name[i], name[map[i] - 1]));
             Notice.instance.Send(NoticeName.AddSystemLog, new object[] { sb.ToString() });
