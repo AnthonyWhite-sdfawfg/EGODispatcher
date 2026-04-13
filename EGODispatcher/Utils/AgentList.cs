@@ -47,14 +47,12 @@ namespace Utils
         public static void LogAgents()
         {
             StringBuilder stringBuilder = new StringBuilder();
-            // 标题加上 Notice 颜色
             stringBuilder.AppendLine(LogUtils.Colorize(LogUtils.ColorType.Notice, "[AgentList] 员工列表："));
             for (int i = 0; i < activeAgents.Count; i++)
             {
                 AgentModel agentModel = activeAgents[i];
                 stringBuilder.AppendLine(string.Format("[{0}] {1}  ({2})", i, agentModel.name, agentModel.GetType().Name));
             }
-            // 使用 LogUtils 发送
             LogUtils.SendLog(stringBuilder.ToString());
         }
 
@@ -74,7 +72,6 @@ namespace Utils
                 dictionary[key].Add(agentModel);
             }
             StringBuilder stringBuilder = new StringBuilder();
-            // 标题加上 Notice 颜色
             stringBuilder.AppendLine(LogUtils.Colorize(LogUtils.ColorType.Notice, "[AgentList] 按部门分类"));
             List<string> list = new List<string>(dictionary.Keys);
             list.Sort();

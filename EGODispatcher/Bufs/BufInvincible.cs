@@ -11,15 +11,15 @@
         public override void Init(UnitModel model)
         {
             base.Init(model);
-            SwitchInvincible(true);
+            SwitchStatus(true);
         }
 
         public override void OnStageRelease()
         {
-            SwitchInvincible(false);
+            SwitchStatus(false);
         }
 
-        public void SwitchInvincible(bool flag)
+        public void SwitchStatus(bool flag)
         {
             if (model is AgentModel agent)
             {
