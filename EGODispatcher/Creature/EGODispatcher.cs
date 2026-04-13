@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Utils;
 
@@ -22,6 +21,7 @@ namespace Creature
             RegisterNotice(); // 注册相关监听器
             _infectionCounter = 0;// 初始化感染协程计数器
             _deathCounter = 0;
+            _deathFlag = false;
             _todayType = CreatureUtils.GetTodayType();// 获取当日业务类型
             AgentList.Set();// 初始化员工列表
             creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
@@ -49,6 +49,7 @@ namespace Creature
         {
             base.OnStageEnd();
             MoneyModel.instance.Add(creatureModels.Length);// 每天结束固定加lob，增加值为当天异想体数量。
+            _deathFlag = false;
             DeregisterNotice();// 注销相关监听器
             AgentList.Clear();
         }
@@ -59,9 +60,11 @@ namespace Creature
             {
                 AgentList.RemoveDeadAgents();
                 _deathCounter++;
-                if (_deathCounter >= 2) {
+                if (_deathCounter >= 2 && !_deathFlag)
+                {
+                    _deathFlag = true;
                     animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.GetInvincibilityBuf));
-                    Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 伤亡人数超出阈值，启用应急防护措施。" });
+                    LogUtils.SendLog(LogUtils.Colorize(LogUtils.ColorType.Notice, "[EGODispatcher] 伤亡人数超出阈值，贝利撒留熔炉已启动。"));
                 }
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
@@ -108,7 +111,8 @@ namespace Creature
         private IEnumerator DelaySetting4Log(float delayTime)
         {
             yield return new WaitForSeconds(delayTime);
-            Notice.instance.Send("AddSystemLog", new object[] { string.Format("<color=#4B8A18>[EGODispatcher]今日类型:{0}</color>", _todayType.ToString()) });
+            string content = string.Format("[EGODispatcher]今日类型:{0}", _todayType.ToString());
+            LogUtils.SendLog(LogUtils.Colorize(LogUtils.ColorType.Notice, content));
             if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
             {
                 CreatureUtils.LogWorkMap();
@@ -176,6 +180,8 @@ namespace Creature
         private CreatureModel[] creatureModels;
 
         private int _deathCounter = 0;
+
+        private bool _deathFlag = false;
 
         #endregion
     }

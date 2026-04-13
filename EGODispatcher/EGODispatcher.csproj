@@ -57,6 +57,7 @@
     <Compile Include="Utils\AgentList.cs" />
     <Compile Include="Utils\ArmorUtils.cs" />
     <Compile Include="Utils\CreatureUtils.cs" />
+    <Compile Include="Utils\LogUtils.cs" />
     <Compile Include="Utils\WeaponUtils.cs" />
     <Compile Include="Weapons\WeaponCannon.cs" />
     <Compile Include="Weapons\WeaponChainsaw.cs" />
