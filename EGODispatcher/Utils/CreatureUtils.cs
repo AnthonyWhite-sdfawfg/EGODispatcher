@@ -177,7 +177,7 @@ namespace Utils
             {
                 mgr.SetRecoverBlockState(false);
                 string content = string.Format("[EGODispatcher] 已重新解锁恢复机制（{0}）。",TodayType);
-                LogUtils.SendLog(LogUtils.Colorize(LogUtils.ColorType.Notice, content));
+                DialogueUtils.SendMessage(content);
             }
         }
 
@@ -233,7 +233,7 @@ namespace Utils
                     UnityEngine.Object.DestroyImmediate(pix);
                 }
             }
-            LogUtils.SendLog(LogUtils.Colorize(LogUtils.ColorType.Notice, "[EGODispatcher] “邪王真眼”协议已启用。"));
+            DialogueUtils.SendMessage("[EGODispatcher] “邪王真眼”协议已启用。");
              
         }
 

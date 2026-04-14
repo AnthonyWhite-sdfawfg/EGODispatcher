@@ -64,7 +64,7 @@ namespace Creature
                 {
                     _deathFlag = true;
                     animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.GetInvincibilityBuf));
-                    LogUtils.SendLog(LogUtils.Colorize(LogUtils.ColorType.Notice, "[EGODispatcher] 伤亡人数超出阈值，贝利撒留熔炉已启动。"));
+                    DialogueUtils.SendMessage("伤亡人数超出阈值，贝利撒留熔炉已启动。");
                 }
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
@@ -111,8 +111,9 @@ namespace Creature
         private IEnumerator DelaySetting4Log(float delayTime)
         {
             yield return new WaitForSeconds(delayTime);
+           
             string content = string.Format("[EGODispatcher]今日类型:{0}", _todayType.ToString());
-            LogUtils.SendLog(LogUtils.Colorize(LogUtils.ColorType.Notice, content));
+            DialogueUtils.SendMessage(content);
             if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
             {
                 CreatureUtils.LogWorkMap();
