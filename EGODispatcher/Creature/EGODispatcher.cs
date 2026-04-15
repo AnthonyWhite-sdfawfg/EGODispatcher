@@ -64,7 +64,7 @@ namespace Creature
                 {
                     _deathFlag = true;
                     animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.GetInvincibilityBuf));
-                    DialogueUtils.SendMessage("伤亡人数超出阈值，贝利撒留熔炉已启动。");
+                    DialogueUtils.SendMessage("伤亡人数超出阈值，开启二阶段防护机制。");
                 }
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
@@ -112,7 +112,7 @@ namespace Creature
         {
             yield return new WaitForSeconds(delayTime);
            
-            string content = string.Format("[EGODispatcher]今日类型:{0}", _todayType.ToString());
+            string content = string.Format("EGODispatcher已上线。今日类型:{0}", _todayType.ToString());
             DialogueUtils.SendMessage(content);
             if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
             {
