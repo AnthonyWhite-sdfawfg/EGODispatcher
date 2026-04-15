@@ -7,6 +7,7 @@ namespace Creature
     public class EGODispatcher : CreatureBase, IObserver
     {
         #region 钩子
+
         public override void OnViewInit(CreatureUnit unit)
         {
             base.OnViewInit(unit);
@@ -17,30 +18,27 @@ namespace Creature
         public override void OnStageStart()
         {
             base.OnStageStart();
-            infectionTimer.StartTimer(1f); // 启动1s周期计时器
+            AgentList.Set(); // 初始化员工列表
+            InitParams(); // 初始化参数
             RegisterNotice(); // 注册相关监听器
-            _infectionCounter = 0;// 初始化感染协程计数器
-            _deathCounter = 0;
-            _deathFlag = false;
-            _todayType = CreatureUtils.GetTodayType();// 获取当日业务类型
-            AgentList.Set();// 初始化员工列表
-            creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
-            animscript.StartCoroutine(DelaySetting4Log(0.5f));// 打印相关log，注册监听器需要时间，为保证log得以出现，故延时运行
+            animscript.StartCoroutine(DelaySetting4Log(0.5f)); // 其余初始化
         }
 
         public override void OnFinishWork(UseSkill skill)
         {
             base.OnFinishWork(skill);
-            CreatureUtils.TryUnlockRecover(_todayType); // 每次工作后解锁一次恢复机制（若锁定）
+            CreatureUtils.TryUnlockRecover(); // 每次工作后解锁一次恢复机制（若锁定）
             AgentModel agent = skill.agent;
             if (agent.HasEquipment(83400))// 83400：原型武器装备ID - 工作时若配备原型武器，则分发装备
             {
                 animscript.StartCoroutine(CreatureUtils.SpawnEquipmentsToInventory(CreatureUtils.EquipmentPlan));
+                DialogueUtils.SendMessage(LocalTexts.EGO_DELIVERED);
             }
             if (agent.HasEquipment(83211))// 83211：特定批次步枪装备ID - 工作时如若配备步枪的特定批次(游戏中存在标识)，则分发饰品 & 统一员工发型
             {
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.DistributeGiftToAgent));
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.MakeBald));
+                DialogueUtils.SendMessage(LocalTexts.ATTACHMENT_DELIVERED);
             }
             animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels)); //每次工作后增加所有异想体的计数器和 pebox
         }
@@ -64,7 +62,7 @@ namespace Creature
                 {
                     _deathFlag = true;
                     animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.GetInvincibilityBuf));
-                    DialogueUtils.SendMessage("伤亡人数超出阈值，开启二阶段防护机制。");
+                    DialogueUtils.SendMessage(LocalTexts.TOO_MUCH_CASUALTIES);
                 }
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
@@ -72,6 +70,7 @@ namespace Creature
                 // 仅 Malkuth 或 Day47 才更新工作映射
                 if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
                 {
+                    DialogueUtils.SendMessage(LocalTexts.MALKUTH_ACTIVATE);
                     CreatureUtils.LogWorkMap();
                 }
                 // 仅 Yesod 或 Day47 才销毁滤镜
@@ -83,7 +82,7 @@ namespace Creature
                         animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed());
                     }
                 }
-                CreatureUtils.TryUnlockRecover(_todayType); // 每次融毁后解锁一次恢复机制（若锁定）
+                CreatureUtils.TryUnlockRecover(); // 每次融毁后解锁一次恢复机制（若锁定）
             }
         }
 
@@ -105,26 +104,54 @@ namespace Creature
         #endregion
 
         #region 私有方法
-        /// <summary>
-        /// [通用] OnStageStart() 处为保证 SystemLog 出现设置的延时协程
-        /// </summary>
+
+        private void InitParams()
+        {
+            infectionTimer.StartTimer(1f); // 启动1s周期计时器
+            _infectionCounter = 0;// 初始化感染协程计数器
+            _deathCounter = 0;
+            _deathFlag = false;
+            _todayType = CreatureUtils.GetTodayType();// 获取当日业务类型
+            creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
+        }
+
+
         private IEnumerator DelaySetting4Log(float delayTime)
         {
             yield return new WaitForSeconds(delayTime);
-           
-            string content = string.Format("EGODispatcher已上线。今日类型:{0}", _todayType.ToString());
+
+            string content = string.Format(LocalTexts.SYSTEM_ONLINE, _todayType.ToString());
             DialogueUtils.SendMessage(content);
-            if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
+
+            bool isD47 = (_todayType == CreatureUtils.DayType.D47);
+            bool isMalkuth = (_todayType == CreatureUtils.DayType.MALKUTH) || isD47;
+            bool isYesod = (_todayType == CreatureUtils.DayType.YESOD) || isD47;
+            bool isNetzach = (_todayType == CreatureUtils.DayType.NETZACH) || isD47;
+
+            if (isMalkuth)
             {
+                DialogueUtils.SendMessage(LocalTexts.MALKUTH_INIT);
                 CreatureUtils.LogWorkMap();
+                DialogueUtils.SendMessage(LocalTexts.MALKUTH_ACTIVATE);
             }
-            if (_todayType == CreatureUtils.DayType.YESOD || _todayType == CreatureUtils.DayType.D47)
+
+            if (isYesod)
             {
-                animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed());
+                DialogueUtils.SendMessage(LocalTexts.YESOD_INIT);
+                if (!isD47)  // D47 时不激活 YESOD
+                {
+                    animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed());
+                    DialogueUtils.SendMessage(LocalTexts.YESOD_ACTIVATE);
+                }
             }
+
+            if (isNetzach)
+            {
+                DialogueUtils.SendMessage(LocalTexts.NETZACH_INIT);
+            }
+
             yield break;
         }
-
 
         /// <summary>
         /// 感染移除协程的安全外壳：通过计数器控制并发，确保同一时间仅1个运行RemoveInfection的BatchProcess协程存在；

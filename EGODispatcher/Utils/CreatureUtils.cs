@@ -170,14 +170,13 @@ namespace Utils
         /// <summary>
         /// [Netzach]解锁恢复机制
         /// </summary>
-        public static void TryUnlockRecover(DayType TodayType)
+        public static void TryUnlockRecover()
         {
             var mgr = SefiraBossManager.Instance;
             if (mgr.IsRecoverBlocked)
             {
                 mgr.SetRecoverBlockState(false);
-                string content = string.Format("[EGODispatcher] 已重新解锁恢复机制（{0}）。",TodayType);
-                DialogueUtils.SendMessage(content);
+                DialogueUtils.SendMessage(LocalTexts.NETACH_ACTIVATE);
             }
         }
 
@@ -220,7 +219,6 @@ namespace Utils
                 if (pix)
                 {
                     UnityEngine.Object.DestroyImmediate(pix);
-                    
                 }
             }
             // 销毁 UI Camera
@@ -233,8 +231,6 @@ namespace Utils
                     UnityEngine.Object.DestroyImmediate(pix);
                 }
             }
-            DialogueUtils.SendMessage("[EGODispatcher] “邪王真眼”协议已启用。");
-             
         }
 
         /// <summary>
@@ -277,7 +273,6 @@ namespace Utils
                     if (ag == null || ag.IsDead()) continue;// 二次判断员工
                     processAction(ag);  // 执行传入的方法
                 }
-
                 yield return null;
             }
         }
@@ -290,12 +285,10 @@ namespace Utils
             Sprite BALD_FRONT_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Front/Bald");
             Sprite BALD_REAR_SPRITE = Resources.Load<Sprite>("Sprites/Worker/Basic/Hair/Rear/RearHair_Transparent");
             WorkerSprite.WorkerSpriteSaveData.Pair BALD_PAIR = new WorkerSprite.WorkerSpriteSaveData.Pair(0, 0);
-
             target.spriteData.FrontHair = BALD_FRONT_SPRITE;
             target.spriteData.RearHair = BALD_REAR_SPRITE;
             target.spriteData.saveData.FrontHair = BALD_PAIR;
             target.spriteData.saveData.RearHair = BALD_PAIR;
-
             target.GetWorkerUnit().spriteSetter.ChangeBasicSpriteData();
         }
 

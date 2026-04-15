@@ -60,6 +60,7 @@
     <Compile Include="Utils\AgentList.cs" />
     <Compile Include="Utils\ArmorUtils.cs" />
     <Compile Include="Utils\CreatureUtils.cs" />
+    <Compile Include="Utils\LocalTexts.cs" />
     <Compile Include="Utils\LogUtils.cs" />
     <Compile Include="Utils\DialogueUtils.cs" />
     <Compile Include="Utils\WeaponUtils.cs" />
