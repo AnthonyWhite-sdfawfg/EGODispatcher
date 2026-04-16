@@ -130,7 +130,7 @@ namespace Utils
                 UnitBuf buf = agent.GetUnitBufByType(type);
                 if (buf != null)
                 {
-                    string content = string.Format("[EGODispatcher] {0}受到感染，正在清除感染……", agent.name);
+                    string content = string.Format(LocalTexts.REMOVING_INFECTION, agent.name);
                     LogUtils.SendLog(LogUtils.Colorize(LogUtils.ColorType.Notice, content));
                     buf.Destroy();
                     agent.RemoveUnitBuf(buf);
