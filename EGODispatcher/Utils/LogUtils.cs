@@ -26,8 +26,7 @@ public static class LogUtils
 
     public static string GetColorHex(ColorType color)
     {
-        string hex;
-        if (ColorHexMap.TryGetValue(color, out hex))
+        if (ColorHexMap.TryGetValue(color, out string hex))
             return hex;
         return ColorHexMap[ColorType.Default];
     }

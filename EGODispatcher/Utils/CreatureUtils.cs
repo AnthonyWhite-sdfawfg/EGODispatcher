@@ -56,6 +56,15 @@ namespace Utils
             D47        // Day 47 构筑部（Kether E1）
         }
 
+        public static readonly Dictionary<ArmorUtils.CombatMode, int[]> CombatModeToGiftMap = new Dictionary<ArmorUtils.CombatMode, int[]>
+        {
+            { ArmorUtils.CombatMode.Worker, GiftWorker },
+            { ArmorUtils.CombatMode.Operative, GiftOperative },
+            { ArmorUtils.CombatMode.KeterCrewMember, GiftKeterCrewMember },
+            { ArmorUtils.CombatMode.Prototype, GiftKeterCrewMember },
+            { ArmorUtils.CombatMode.None, GiftDefault }
+        };
+
         #endregion
 
         #region 方法
@@ -112,7 +121,7 @@ namespace Utils
         {
             WorkerModel workerModel = ag as WorkerModel;
             ArmorUtils.CombatMode mode = ArmorUtils.ResolveCombatMode(workerModel);
-            if (ArmorUtils.CombatModeToGiftMap.TryGetValue(mode, out int[] giftIds))
+            if (CombatModeToGiftMap.TryGetValue(mode, out int[] giftIds))
             {
                 return giftIds;
             }

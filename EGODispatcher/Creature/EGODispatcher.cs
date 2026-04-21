@@ -48,7 +48,7 @@ namespace Creature
             base.OnStageEnd();
             MoneyModel.instance.Add(creatureModels.Length);// 每天结束固定加lob，增加值为当天异想体数量。
             _deathFlag = false;
-            DeregisterNotice();// 注销相关监听器
+            DeregisterNotice();
             AgentList.Clear();
         }
 
@@ -67,22 +67,26 @@ namespace Creature
             }
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {
-                // 仅 Malkuth 或 Day47 才更新工作映射
-                if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
+                // 仅 Malkuth 或 D47 才更新工作映射
+                if (isMalkuth)
                 {
                     DialogueUtils.SendMessage(LocalTexts.MALKUTH_ACTIVATE);
                     CreatureUtils.LogWorkMap();
                 }
-                // 仅 Yesod 或 Day47 才销毁滤镜
-                if (_todayType == CreatureUtils.DayType.D47 || _todayType == CreatureUtils.DayType.YESOD)
+
+                // 仅 Yesod 或 D47 才销毁滤镜（且需要融毁等级 >= 2）
+                if (isYesod)
                 {
                     int level = CreatureOverloadManager.instance.GetQliphothOverloadLevel();
                     if (level >= 2)
                     {
                         animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed());
+                        DialogueUtils.SendMessage(LocalTexts.YESOD_ACTIVATE);
                     }
                 }
-                CreatureUtils.TryUnlockRecover(); // 每次融毁后解锁一次恢复机制（若锁定）
+
+                // 每次融毁后解锁一次恢复机制（若锁定）
+                CreatureUtils.TryUnlockRecover();
             }
         }
 
@@ -90,7 +94,7 @@ namespace Creature
         public override void OnFixedUpdate(CreatureModel creature)
         {
             base.OnFixedUpdate(creature);
-            if (!infectionTimer.started || !infectionTimer.RunTimer()) // 计时器未启动/未到周期 → 跳过后续逻辑（周期为1s）
+            if (!CreatureTimer.started || !CreatureTimer.RunTimer()) // 计时器未启动/未到周期 → 跳过后续逻辑（周期为1s）
             {
                 return;
             }
@@ -99,7 +103,7 @@ namespace Creature
                 animscript.StartCoroutine(RemoveInfectionShell());
             }
             EnergyModel.instance.AddEnergy(creatureModels.Length);// 每周期固定增加能量，增加值为当天异想体数量
-            infectionTimer.StartTimer(1f);
+            CreatureTimer.StartTimer(1f);
         }
         #endregion
 
@@ -107,7 +111,7 @@ namespace Creature
 
         private void InitParams()
         {
-            infectionTimer.StartTimer(1f); // 启动1s周期计时器
+            CreatureTimer.StartTimer(1f); // 启动1s周期计时器
             _infectionCounter = 0;// 初始化感染协程计数器
             _deathCounter = 0;
             _deathFlag = false;
@@ -115,6 +119,25 @@ namespace Creature
             creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
         }
 
+        /// <summary>
+        /// 注册相关监听器
+        /// </summary>
+        private void RegisterNotice()
+        {
+            Notice.instance.Observe(NoticeName.OnAgentDead, this);
+            Notice.instance.Observe(NoticeName.AddSystemLog, this);
+            Notice.instance.Observe(NoticeName.OnQliphothOverloadLevelChanged, this);
+        }
+
+        /// <summary>
+        /// 注销相关监听器
+        /// </summary>
+        private void DeregisterNotice()
+        {
+            Notice.instance.Remove(NoticeName.OnAgentDead, this);
+            Notice.instance.Remove(NoticeName.AddSystemLog, this);
+            Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
+        }
 
         private IEnumerator DelaySetting4Log(float delayTime)
         {
@@ -123,10 +146,10 @@ namespace Creature
             string content = string.Format(LocalTexts.SYSTEM_ONLINE, _todayType.ToString());
             DialogueUtils.SendMessage(content);
 
-            bool isD47 = (_todayType == CreatureUtils.DayType.D47);
-            bool isMalkuth = (_todayType == CreatureUtils.DayType.MALKUTH) || isD47;
-            bool isYesod = (_todayType == CreatureUtils.DayType.YESOD) || isD47;
-            bool isNetzach = (_todayType == CreatureUtils.DayType.NETZACH) || isD47;
+            isD47 = (_todayType == CreatureUtils.DayType.D47);
+            isMalkuth = (_todayType == CreatureUtils.DayType.MALKUTH) || isD47;
+            isYesod = (_todayType == CreatureUtils.DayType.YESOD) || isD47;
+            isNetzach = (_todayType == CreatureUtils.DayType.NETZACH) || isD47;
 
             if (isMalkuth)
             {
@@ -172,32 +195,12 @@ namespace Creature
             }
         }
 
-        /// <summary>
-        /// 注册相关监听器
-        /// </summary>
-        private void RegisterNotice()
-        {
-            Notice.instance.Observe(NoticeName.OnAgentDead, this);
-            Notice.instance.Observe(NoticeName.AddSystemLog, this);
-            Notice.instance.Observe(NoticeName.OnQliphothOverloadLevelChanged, this);
-        }
-
-        /// <summary>
-        /// 注销相关监听器
-        /// </summary>
-        private void DeregisterNotice()
-        {
-            Notice.instance.Remove(NoticeName.OnAgentDead, this);
-            Notice.instance.Remove(NoticeName.AddSystemLog, this);
-            Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
-        }
-
         #endregion
 
         #region 字段
         public EGODispatcherAnim animscript;
 
-        private readonly Timer infectionTimer = new Timer();
+        private readonly Timer CreatureTimer = new Timer();
 
         // 感染移除协程计数器：确保同一时间仅1个RemoveInfection协程运行，避免并发冲突
         private int _infectionCounter = 0;
@@ -210,6 +213,14 @@ namespace Creature
         private int _deathCounter = 0;
 
         private bool _deathFlag = false;
+
+        private bool isD47;
+
+        private bool isMalkuth;
+
+        private bool isYesod;
+
+        private bool isNetzach;
 
         #endregion
     }
