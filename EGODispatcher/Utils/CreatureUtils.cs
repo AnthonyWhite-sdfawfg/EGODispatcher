@@ -240,6 +240,7 @@ namespace Utils
                     UnityEngine.Object.DestroyImmediate(pix);
                 }
             }
+            DialogueUtils.SendMessage(LocalTexts.YESOD_ACTIVATE);
         }
 
         /// <summary>

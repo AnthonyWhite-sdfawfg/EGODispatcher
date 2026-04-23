@@ -94,7 +94,7 @@ namespace Creature
         public override void OnFixedUpdate(CreatureModel creature)
         {
             base.OnFixedUpdate(creature);
-            if (!CreatureTimer.started || !CreatureTimer.RunTimer()) // 计时器未启动/未到周期 → 跳过后续逻辑（周期为1s）
+            if (!InfectionTimer.started || !InfectionTimer.RunTimer()) // 计时器未启动/未到周期 → 跳过后续逻辑（周期为1s）
             {
                 return;
             }
@@ -103,7 +103,7 @@ namespace Creature
                 animscript.StartCoroutine(RemoveInfectionShell());
             }
             EnergyModel.instance.AddEnergy(creatureModels.Length);// 每周期固定增加能量，增加值为当天异想体数量
-            CreatureTimer.StartTimer(1f);
+            InfectionTimer.StartTimer(1f);
         }
         #endregion
 
@@ -111,7 +111,7 @@ namespace Creature
 
         private void InitParams()
         {
-            CreatureTimer.StartTimer(1f); // 启动1s周期计时器
+            InfectionTimer.StartTimer(1f); // 启动1s周期计时器
             _infectionCounter = 0;// 初始化感染协程计数器
             _deathCounter = 0;
             _deathFlag = false;
@@ -164,7 +164,6 @@ namespace Creature
                 if (!isD47)  // D47 时不激活 YESOD
                 {
                     animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed());
-                    DialogueUtils.SendMessage(LocalTexts.YESOD_ACTIVATE);
                 }
             }
 
@@ -200,7 +199,7 @@ namespace Creature
         #region 字段
         public EGODispatcherAnim animscript;
 
-        private readonly Timer CreatureTimer = new Timer();
+        private readonly Timer InfectionTimer = new Timer();
 
         // 感染移除协程计数器：确保同一时间仅1个RemoveInfection协程运行，避免并发冲突
         private int _infectionCounter = 0;

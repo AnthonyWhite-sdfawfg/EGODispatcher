@@ -80,15 +80,13 @@ namespace Utils
 
         #region 方法
 
+        /// <summary>
+        /// 避免重复添加护盾导致护盾被覆盖
+        /// </summary>
         public static bool ShouldAddBarrier(UnitModel model)
         {
             WorkerModel workerModel = model as WorkerModel;
             return workerModel != null && !workerModel.IsPanic() && !model.HasUnitBuf(UnitBufType.BARRIER_ALL);
-        }
-
-        public static bool IsNormal(WorkerModel worker)
-        {
-            return worker != null && !worker.IsDead() && worker.GetMovableNode().currentPassage != null && !worker.IsPanic() && worker.unconAction == null && !worker.CannotControll();
         }
 
         public static void HealThisWorker(WorkerModel worker, float ratioHP, float ratioMental)
@@ -106,16 +104,6 @@ namespace Utils
                     worker.RecoverMental(num2);
                 }
             }
-        }
-
-        public static void HealThisWorker(WorkerModel worker, float ratio)
-        {
-            HealThisWorker(worker, ratio, ratio);
-        }
-
-        public static bool IsHostile(UnitModel target, UnitModel owner, WorkerModel worker)
-        {
-            return target != null && owner != null && target.IsAttackTargetable() && target != owner && (owner.IsHostile(target) || (worker != null && worker.IsPanic()) || target is CreatureModel);
         }
 
         public static CombatMode ResolveCombatMode(WorkerModel worker)

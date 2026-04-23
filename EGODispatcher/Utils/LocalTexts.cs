@@ -2,7 +2,7 @@
 {
     public static class LocalTexts
     {
-        public const string MALKUTH_INIT = "检测到工作指令系统出现故障，开启指令映射模式。";
+        public const string MALKUTH_INIT = "检测到工作流被打乱，开启指令映射模式。";
         public const string MALKUTH_ACTIVATE = "指令映射表已更新。";
 
         public const string YESOD_INIT = "检测到情报显示系统状态异常，“邪王真眼”协议正在初始化。";
