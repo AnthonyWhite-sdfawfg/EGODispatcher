@@ -161,7 +161,7 @@ namespace Creature
             if (isYesod)
             {
                 DialogueUtils.SendMessage(LocalTexts.YESOD_INIT);
-                if (!isD47)  // D47 时不激活 YESOD
+                if (!isD47)  // D47 开始时不立刻激活 YESOD
                 {
                     animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed());
                 }
@@ -201,13 +201,11 @@ namespace Creature
 
         private readonly Timer InfectionTimer = new Timer();
 
-        // 感染移除协程计数器：确保同一时间仅1个RemoveInfection协程运行，避免并发冲突
-        private int _infectionCounter = 0;
+        private int _infectionCounter = 0; // 感染移除协程计数器：确保同一时间仅1个RemoveInfection协程运行，避免并发冲突
 
         private CreatureUtils.DayType _todayType;
 
-        // 当日所有异想体
-        private CreatureModel[] creatureModels;
+        private CreatureModel[] creatureModels; // 当日所有异想体
 
         private int _deathCounter = 0;
 

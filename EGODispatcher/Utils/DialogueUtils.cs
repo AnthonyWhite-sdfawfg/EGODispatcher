@@ -47,7 +47,7 @@ namespace Utils
 
         public static void SendMessage(string text)
         {
-            SendMessage(text, new Color(204f / 255f, 0f, 0f, 1f)); // 与源码血蛾相同的红色
+            SendMessage(text, new Color(204f / 255f, 0f, 0f, 1f)); 
         }
     }
 }
