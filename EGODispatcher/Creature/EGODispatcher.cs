@@ -24,6 +24,12 @@ namespace Creature
             animscript.StartCoroutine(DelaySetting4Log(0.5f)); // 其余初始化
         }
 
+        /// <summary>
+        ///     每次工作后：
+        ///         如若恢复机制被锁定则解锁；
+        ///         如若对此工作的员工配有武器83400，则生成所有装备；
+        ///         如若对此工作的员工配有武器83211，则对所有员工依照其配备武器分发饰品并修改发型
+        /// </summary>
         public override void OnFinishWork(UseSkill skill)
         {
             base.OnFinishWork(skill);

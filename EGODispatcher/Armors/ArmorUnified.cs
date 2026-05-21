@@ -21,6 +21,7 @@ namespace Armors
             SetCombatParams(worker);
         }
 
+        // 以计时器的周期对员工进行恢复
         public override void OnFixedUpdate()
         {
             base.OnFixedUpdate();
@@ -47,6 +48,7 @@ namespace Armors
             HealTimer.StartTimer(timerInterval);
         }
 
+        // 员工生命值 / 精神值低于阈值则修改对应抗性
         public override DefenseInfo GetDefense(UnitModel actor)
         {
             DefenseInfo defenseInfo = base.GetDefense(actor).Copy();
@@ -68,6 +70,7 @@ namespace Armors
             return defenseInfo;
         }
 
+        // 进入战斗时添加护盾、添加增速buf
         public override void OnPrepareWeapon(UnitModel actor)
         {
             if (ArmorUtils.ShouldAddBarrier(actor))
@@ -82,6 +85,7 @@ namespace Armors
             base.OnPrepareWeapon(actor);
         }
 
+        // 受击时添加护盾
         public override bool OnTakeDamage(UnitModel actor, ref DamageInfo dmg)
         {
             if (owner == null) return false;
