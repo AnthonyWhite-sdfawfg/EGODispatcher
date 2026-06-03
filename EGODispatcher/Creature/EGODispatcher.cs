@@ -26,7 +26,7 @@ namespace Creature
 
         /// <summary>
         ///     每次工作后：
-        ///         如若恢复机制被锁定则解锁；
+        ///         如若恢复机制被锁定，解锁；
         ///         如若对此工作的员工配有武器83400，则生成所有装备；
         ///         如若对此工作的员工配有武器83211，则对所有员工依照其配备武器分发饰品并修改发型
         /// </summary>
@@ -52,7 +52,7 @@ namespace Creature
         public override void OnStageEnd()
         {
             base.OnStageEnd();
-            MoneyModel.instance.Add(creatureModels.Length);// 每天结束固定加lob，增加值为当天异想体数量。
+            MoneyModel.instance.Add(100);// 每天结束固定加100点lob。
             _deathFlag = false;
             DeregisterNotice();
             AgentList.Clear();
