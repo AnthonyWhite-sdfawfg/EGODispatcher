@@ -21,7 +21,6 @@ namespace Creature
             AgentList.Set(); // 初始化员工列表
             InitParams(); // 初始化参数
             RegisterNotice(); // 注册相关监听器
-            animscript.StartCoroutine(DelaySetting4Log(0.5f)); // 其余初始化
         }
 
         /// <summary>
@@ -123,6 +122,7 @@ namespace Creature
             _deathFlag = false;
             _todayType = CreatureUtils.GetTodayType();// 获取当日业务类型
             creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
+            animscript.StartCoroutine(InitDayTypeConfig(0.5f)); // 根据当天类型（D47/MALKUTH/YESOD/NETZACH）初始化对应的配置和 UI 状态。
         }
 
         /// <summary>
@@ -145,7 +145,7 @@ namespace Creature
             Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
         }
 
-        private IEnumerator DelaySetting4Log(float delayTime)
+        private IEnumerator InitDayTypeConfig(float delayTime)
         {
             yield return new WaitForSeconds(delayTime);
 
