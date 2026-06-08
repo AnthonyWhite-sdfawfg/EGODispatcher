@@ -203,6 +203,7 @@ namespace Creature
         #endregion
 
         #region 字段
+
         public EGODispatcherAnim animscript;
 
         private readonly Timer InfectionTimer = new Timer();
