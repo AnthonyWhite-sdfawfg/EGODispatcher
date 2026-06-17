@@ -62,6 +62,7 @@ namespace Creature
             if (notice == NoticeName.OnAgentDead)
             {
                 AgentList.RemoveDeadAgents();
+                animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(AddShield));
                 _deathCounter++;
                 if (_deathCounter >= 2 && !_deathFlag)
                 {
@@ -199,6 +200,19 @@ namespace Creature
                 _infectionCounter--;
             }
         }
+
+        /// <summary>
+        /// 员工死亡之后添加护盾
+        /// </summary>
+        private void AddShield(AgentModel ag)
+        {
+            ag.AddUnitBuf(new BarrierBuf(
+                    RwbpType.A,
+                    ArmorUtils.BARRIER_ON_PREPARE_VALUE,
+                    ArmorUtils.BARRIER_ON_PREPARE_DURATION
+                ));
+        }
+
 
         #endregion
 
