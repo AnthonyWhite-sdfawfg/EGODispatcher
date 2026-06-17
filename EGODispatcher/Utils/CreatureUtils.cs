@@ -56,6 +56,7 @@ namespace Utils
             D47        // Day 47 构筑部（Kether E1）
         }
 
+        // 通过解析combatMode分配对应的Gift
         public static readonly Dictionary<ArmorUtils.CombatMode, int[]> CombatModeToGiftMap = new Dictionary<ArmorUtils.CombatMode, int[]>
         {
             { ArmorUtils.CombatMode.Worker, GiftWorker },
@@ -64,6 +65,9 @@ namespace Utils
             { ArmorUtils.CombatMode.Prototype, GiftKeterCrewMember },
             { ArmorUtils.CombatMode.None, GiftDefault }
         };
+
+        // 步枪对应的ID，为后续分配饰品作判断
+        public static int[] targetIds = { 83211, 83212, 83213, 83214 };
 
         #endregion
 

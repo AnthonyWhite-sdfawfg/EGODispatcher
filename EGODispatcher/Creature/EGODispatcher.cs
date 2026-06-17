@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using Utils;
 
@@ -39,7 +40,7 @@ namespace Creature
                 animscript.StartCoroutine(CreatureUtils.SpawnEquipmentsToInventory(CreatureUtils.EquipmentPlan));
                 DialogueUtils.SendMessage(LocalTexts.EGO_DELIVERED);
             }
-            if (agent.HasEquipment(83211))// 83211：特定批次步枪装备ID - 工作时如若配备步枪的特定批次(游戏中存在标识)，则分发饰品 & 统一员工发型
+            if (Array.Exists(CreatureUtils.targetIds, id => agent.HasEquipment(id)))//工作时如若配备步枪的任意批次(游戏中存在标识)，则分发饰品 & 统一员工发型
             {
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.DistributeGiftToAgent));
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.MakeBald));
