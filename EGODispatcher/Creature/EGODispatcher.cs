@@ -60,6 +60,7 @@ namespace Creature
 
         public void OnNotice(string notice, params object[] param)
         {
+            // 员工死亡
             if (notice == NoticeName.OnAgentDead)
             {
                 AgentList.RemoveDeadAgents();
@@ -72,6 +73,8 @@ namespace Creature
                     DialogueUtils.SendMessage(LocalTexts.TOO_MUCH_CASUALTIES);
                 }
             }
+
+            // Qliphoth等级更新
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {
                 // 仅 Malkuth 或 D47 才更新工作映射
@@ -178,6 +181,7 @@ namespace Creature
             if (isNetzach)
             {
                 DialogueUtils.SendMessage(LocalTexts.NETZACH_INIT);
+                CreatureUtils.TryUnlockRecover();
             }
 
             yield break;

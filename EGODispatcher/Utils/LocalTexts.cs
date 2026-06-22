@@ -8,7 +8,7 @@
         public const string YESOD_INIT = "检测到情报显示系统状态异常，“邪王真眼”协议正在初始化。";
         public const string YESOD_ACTIVATE = "检测到UI故障。“邪王真眼”协议已介入，光圈已调至最大值。";
 
-        public const string NETZACH_INIT = "检测到再生反应堆状态异常，“贝利撒留熔炉”正在预热。请注意，需要派遣员工手动开启/重启“贝利撒留熔炉”。";
+        public const string NETZACH_INIT = "检测到再生反应堆状态异常，“贝利撒留熔炉”正在预热。";
         public const string NETACH_ACTIVATE = "“贝利撒留熔炉”开始运行，医疗系统已重新上线。";
 
         public const string SYSTEM_ONLINE = "EGODispatcher已上线。今日类型:{0}";
