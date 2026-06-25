@@ -5,6 +5,7 @@ using Utils;
 
 namespace Creature
 {
+
     public class EGODispatcher : CreatureBase, IObserver
     {
         #region 钩子

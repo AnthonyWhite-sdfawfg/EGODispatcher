@@ -3,11 +3,9 @@ using Utils;
 namespace Armors
 {
     /// <summary>
-    /// 护甲核心逻辑统一管理脚本
-    /// 1. 根据员工战斗参数（CombatMode）设定恢复的周期与比例；
-    /// 2. 生命值/精神值低于阈值时修改防御属性；
-    /// 3. 武器准备/受击时触发屏障、移速加成等护甲特有效果；
-    /// 4. 所有数值常量/结构体/工具方法依赖 ArmorUtils 定义。
+    /// 周期恢复
+    /// 修改抗性
+    /// 受击、参战时获得护盾
     /// </summary>
     public class ArmorUnified : EquipmentScriptBase
     {
@@ -122,21 +120,21 @@ namespace Armors
         #endregion
 
         #region 私有字段
-        // 单位：秒；值由当前 CombatMode 决定
+
         private float timerInterval;
 
-        // 低于此阈值时修改防御抗性，计算方式：maxHp * DEFENSE_MARK_RATIO
         private float hpMark;
+
         private float mpMark;
 
         private readonly Timer HealTimer = new Timer();
 
-        // 当前战斗中的员工及其所属单位
         private WorkerModel worker;
+
         private UnitModel owner;
 
-        // 当前模式，用于匹配恢复参数
         private ArmorUtils.CombatMode currentMode;
+
         #endregion
     }
 }
