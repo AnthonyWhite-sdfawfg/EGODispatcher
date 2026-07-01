@@ -19,5 +19,7 @@
         public const string ATTACHMENT_DELIVERED = "已向配备有EXOSuit以及对应武器的员工分发EGODispatcher生成的饰品。";
 
         public const string REMOVING_INFECTION = "{0}受到感染，正在清除感染……";
+
+        public const string GENERATING_LOB = "Lob Generator已启动。将于今日结束后自动关闭。";
     }
 }

@@ -20,43 +20,46 @@ namespace Creature
         public override void OnStageStart()
         {
             base.OnStageStart();
-            AgentList.Set(); // 初始化员工列表
             InitParams(); // 初始化参数
             RegisterNotice(); // 注册相关监听器
         }
 
-        /// <summary>
-        ///     每次工作后：
-        ///         如若恢复机制被锁定，解锁；
-        ///         如若对此工作的员工配有武器83400，则生成所有装备；
-        ///         如若对此工作的员工配有武器83211，则对所有员工依照其配备武器分发饰品并修改发型
-        /// </summary>
         public override void OnFinishWork(UseSkill skill)
         {
             base.OnFinishWork(skill);
+
             CreatureUtils.TryUnlockRecover(); // 每次工作后解锁一次恢复机制（若锁定）
+
             AgentModel agent = skill.agent;
-            if (agent.HasEquipment(83400))// 83400：原型武器装备ID - 工作时若配备原型武器，则分发装备
+
+            if (agent.HasEquipment(83400)) // 83400：原型武器装备ID - 工作时若配备原型武器，则分发装备
             {
                 animscript.StartCoroutine(CreatureUtils.SpawnEquipmentsToInventory(CreatureUtils.EquipmentPlan));
                 DialogueUtils.SendMessage(LocalTexts.EGO_DELIVERED);
             }
-            if (Array.Exists(CreatureUtils.targetIds, id => agent.HasEquipment(id)))//工作时如若配备步枪的任意批次(游戏中存在标识)，则分发饰品 & 统一员工发型
+
+            if (Array.Exists(CreatureUtils.targetIds, id => agent.HasEquipment(id))) // 工作时如若配备步枪的任意批次，则分发饰品 & 统一员工发型
             {
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.DistributeGiftToAgent));
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.MakeBald));
                 DialogueUtils.SendMessage(LocalTexts.ATTACHMENT_DELIVERED);
             }
-            animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels)); //每次工作后增加所有异想体的计数器和 pebox
+
+            if (_lobTrigger == false) // 每日首次工作后触发lobTrigger
+            {
+                _lobTrigger = true;
+                DialogueUtils.SendMessage(LocalTexts.GENERATING_LOB);
+            }
+
+            animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels)); // 每次工作后增加所有异想体的计数器和 pebox
+
         }
 
         public override void OnStageEnd()
         {
             base.OnStageEnd();
-            MoneyModel.instance.Add(100);// 每天结束固定加100点lob。
-            _deathFlag = false;
-            DeregisterNotice();
-            AgentList.Clear();
+            ResetParams(); // 复位参数
+            DeregisterNotice(); // 注销监听器
         }
 
         public void OnNotice(string notice, params object[] param)
@@ -66,10 +69,10 @@ namespace Creature
             {
                 AgentList.RemoveDeadAgents();
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(AddShield));
-                _deathCounter++;
-                if (_deathCounter >= 2 && !_deathFlag)
+                _deathThresholdCounter++;
+                if (_deathThresholdCounter >= 2 && !_deathThresholdFlag)
                 {
-                    _deathFlag = true;
+                    _deathThresholdFlag = true;
                     animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.GetInvincibilityBuf));
                     DialogueUtils.SendMessage(LocalTexts.TOO_MUCH_CASUALTIES);
                 }
@@ -105,15 +108,24 @@ namespace Creature
         public override void OnFixedUpdate(CreatureModel creature)
         {
             base.OnFixedUpdate(creature);
+
             if (!InfectionTimer.started || !InfectionTimer.RunTimer()) // 计时器未启动/未到周期 → 跳过后续逻辑（周期为1s）
             {
                 return;
             }
-            if (_infectionCounter == 0)// 若感染移除协程未运行（计数器为0），则启动协程处理感染
+
+            if (_infectionCounter == 0) // 若感染移除协程未运行（计数器为0），则启动协程处理感染
             {
                 animscript.StartCoroutine(RemoveInfectionShell());
             }
+
+            if (_lobTrigger) // 如果lobTrigger被触发，则每周期固定增加lob，增加值为当天异想体数量
+            {
+                MoneyModel.instance.Add(creatureModels.Length);
+            }
+
             EnergyModel.instance.AddEnergy(creatureModels.Length);// 每周期固定增加能量，增加值为当天异想体数量
+
             InfectionTimer.StartTimer(1f);
         }
         #endregion
@@ -122,14 +134,25 @@ namespace Creature
 
         private void InitParams()
         {
-            InfectionTimer.StartTimer(1f); // 启动1s周期计时器
-            _infectionCounter = 0;// 初始化感染协程计数器
-            _deathCounter = 0;
-            _deathFlag = false;
-            _todayType = CreatureUtils.GetTodayType();// 获取当日业务类型
-            creatureModels = CreatureManager.instance.GetCreatureList();// 取当日所有异想体
+
+            InfectionTimer.StartTimer(1f); // 周期计时器
+            _infectionCounter = 0; // 感染协程计数器
+            _deathThresholdCounter = 0; // 死亡阈值
+            _deathThresholdFlag = false;
+            _lobTrigger = false; // lob生成
+            _todayType = CreatureUtils.GetTodayType(); // 获取当日业务类型
+            creatureModels = CreatureManager.instance.GetCreatureList(); // 取当日所有异想体
+
+            AgentList.Set(); // 初始化员工列表
             animscript.StartCoroutine(InitDayTypeConfig(0.5f)); // 根据当天类型（D47/MALKUTH/YESOD/NETZACH）初始化对应的配置和 UI 状态。
         }
+
+        private void ResetParams()
+        {
+            AgentList.Clear();
+            _lobTrigger = false;
+        }
+
 
         /// <summary>
         /// 注册相关监听器
@@ -234,9 +257,11 @@ namespace Creature
 
         private CreatureModel[] creatureModels; // 当日所有异想体
 
-        private int _deathCounter = 0;
+        private int _deathThresholdCounter = 0;
 
-        private bool _deathFlag = false;
+        private bool _deathThresholdFlag = false;
+
+        private bool _lobTrigger = false;
 
         private bool isD47;
 
