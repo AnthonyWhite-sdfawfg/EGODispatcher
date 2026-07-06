@@ -9,6 +9,13 @@ namespace Utils
 {
     public static class CreatureUtils
     {
+        #region 常量字段
+
+        public const int DEFAULT_BATCH_SIZE = 5;
+        public const float DEFAULT_DELAY_TIME = 0.5F;
+
+        #endregion
+
         #region 数据结构
 
         // Attachment套装
@@ -48,6 +55,9 @@ namespace Utils
             HOD,       // Hod 核心抑制
             D47        // Day 47 构筑部（Kether E1）
         }
+
+        //
+        public static string[] WorkType = { "<color=red>本能</color>", "<color=white>洞察</color>", "<color=magenta>沟通</color>", "<color=cyan>压迫</color>" };
 
         #endregion
 
@@ -163,7 +173,6 @@ namespace Utils
             if (mgr.IsRecoverBlocked)
             {
                 mgr.SetRecoverBlockState(false);
-                Notice.instance.Send(NoticeName.AddSystemLog, new object[] { $"[EGODispatcher] 已重新解锁恢复机制（{TodayType}）。" });
             }
         }
 
@@ -185,11 +194,14 @@ namespace Utils
         public static void LogWorkMap()
         {
             int[] map = GetWorkMap();
+            
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("[EGODispatcher] 工作映射已更新（当前过载等级 " + CreatureOverloadManager.instance.GetQliphothOverloadLevel() + "）:");
-            string[] name = { "<color=red>本能</color>", "<color=white>洞察</color>", "<color=magenta>沟通</color>", "<color=cyan>压迫</color>" };
             for (int i = 0; i < 4; i++)
-                sb.AppendLine(string.Format("  [{0}] {1} → {2}", i + 1, name[i], name[map[i] - 1]));
+            {
+                sb.AppendLine(string.Format("  [{0}] {1} → {2}", i + 1, WorkType[i], WorkType[map[i] - 1]));
+            }
+
             Notice.instance.Send(NoticeName.AddSystemLog, new object[] { sb.ToString() });
         }
 
@@ -206,9 +218,9 @@ namespace Utils
                 if (pix)
                 {
                     UnityEngine.Object.DestroyImmediate(pix);
-                    Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 已销毁主Camera的像素化滤镜组件" });
                 }
             }
+
             // 销毁 UI Camera
             Camera uiCam = UIActivateManager.instance?.GetCam();
             if (uiCam)
@@ -216,8 +228,7 @@ namespace Utils
                 var pix = uiCam.GetComponent<CameraFilterPack_Pixel_Pixelisation>();
                 if (pix)
                 {
-                    UnityEngine.Object.DestroyImmediate(pix);
-                    Notice.instance.Send("AddSystemLog", new object[] { "[EGODispatcher] 已销毁UI Camera的像素化滤镜组件" });
+                    UnityEngine.Object.DestroyImmediate(pix); 
                 }
             }
         }
@@ -225,9 +236,9 @@ namespace Utils
         /// <summary>
         /// [Yesod]迭代器外壳，因为未知原因，滤镜需要延迟一段时间后才能进行销毁
         /// </summary>
-        public static IEnumerator ClearPixelDelayed()
+        public static IEnumerator ClearPixelDelayed(float delayTime = DEFAULT_DELAY_TIME)
         {
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(delayTime);
             ClearYesodFilters();
         }
 
@@ -248,7 +259,7 @@ namespace Utils
         /// <summary>
         /// [批处理协程]处理全体员工时使用：依据传参数量分组进行处理；
         /// </summary>
-        public static IEnumerator AgentBatchProcess(Action<AgentModel> processAction, int batch = 5)
+        public static IEnumerator AgentBatchProcess(Action<AgentModel> processAction, int batch = DEFAULT_BATCH_SIZE)
         {
             List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
             if (snapshot.Count == 0) yield break;
