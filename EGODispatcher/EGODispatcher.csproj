@@ -41,6 +41,10 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>Lib\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Lib\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <AppDesigner Include="Properties\" />
@@ -56,6 +60,9 @@
     <Compile Include="Utils\AgentList.cs" />
     <Compile Include="Utils\ArmorUtils.cs" />
     <Compile Include="Utils\CreatureUtils.cs" />
+    <Compile Include="Utils\DialogueUtils.cs" />
+    <Compile Include="Utils\LocalTexts.cs" />
+    <Compile Include="Utils\LogUtils.cs" />
     <Compile Include="Utils\WeaponUtils.cs" />
     <Compile Include="Weapons\WeaponCannon.cs" />
     <Compile Include="Weapons\WeaponChainsaw.cs" />
