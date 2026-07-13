@@ -56,6 +56,13 @@ namespace Utils
             D47        // Day 47 构筑部（Kether E1）
         }
 
+        public enum StatusType
+        {
+            DayInit,
+            Notice,
+            Work
+        }
+
         //
         public static string[] WorkType = { "<color=red>本能</color>", "<color=white>洞察</color>", "<color=magenta>沟通</color>", "<color=cyan>压迫</color>" };
 
@@ -167,12 +174,28 @@ namespace Utils
         /// <summary>
         /// [Netzach]解锁恢复机制
         /// </summary>
-        public static void TryUnlockRecover(DayType TodayType)
+        public static string TryUnlockRecover(StatusType statusType)
         {
             var mgr = SefiraBossManager.Instance;
-            if (mgr.IsRecoverBlocked)
+            bool wasBlocked = mgr.IsRecoverBlocked;
+
+            // 如果需要解锁，先执行解锁
+            if (wasBlocked)
             {
                 mgr.SetRecoverBlockState(false);
+            }
+
+            // 根据状态类型和是否解锁返回对应的消息
+            switch (statusType)
+            {
+                case StatusType.DayInit:
+                    return LocalTexts.NETZACH_INIT;
+                case StatusType.Notice:
+                    return wasBlocked ? LocalTexts.NETZACH_ACTIVATE : LocalTexts.NETZACH_SELF_TEST_CLEAR;
+                case StatusType.Work:
+                    return wasBlocked ? LocalTexts.NETZACH_MANUAL_OVERRIDE : null; 
+                default:
+                    return "unnoticed situation!";
             }
         }
 
@@ -196,7 +219,7 @@ namespace Utils
             int[] map = GetWorkMap();
             
             StringBuilder sb = new StringBuilder();
-            sb.AppendLine("[EGODispatcher] 工作映射已更新（当前过载等级 " + CreatureOverloadManager.instance.GetQliphothOverloadLevel() + "）:");
+            sb.AppendLine("[EGODispatcher] 指令映射表（当前过载等级 " + CreatureOverloadManager.instance.GetQliphothOverloadLevel() + "）:");
             for (int i = 0; i < 4; i++)
             {
                 sb.AppendLine(string.Format("  [{0}] {1} → {2}", i + 1, WorkType[i], WorkType[map[i] - 1]));
@@ -236,7 +259,7 @@ namespace Utils
         /// <summary>
         /// [Yesod]迭代器外壳，因为未知原因，滤镜需要延迟一段时间后才能进行销毁
         /// </summary>
-        public static IEnumerator ClearPixelDelayed(float delayTime = DEFAULT_DELAY_TIME)
+        public static IEnumerator ClearPixelDelayed(float delayTime)
         {
             yield return new WaitForSeconds(delayTime);
             ClearYesodFilters();

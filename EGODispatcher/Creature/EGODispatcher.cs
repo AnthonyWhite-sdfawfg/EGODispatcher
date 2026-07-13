@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Utils;
@@ -20,48 +21,47 @@ namespace Creature
         {
             base.OnStageStart();
 
-            _infectionCounter = 0; // 初始化感染协程计数器
-            _todayType = CreatureUtils.GetTodayType(); // 获取当日业务类型
-            creatureModels = CreatureManager.instance.GetCreatureList(); // 取当日所有异想体
+            _infectionCounter = 0;
+            _todayType = CreatureUtils.GetTodayType();
+            creatureModels = CreatureManager.instance.GetCreatureList();
 
-            RegisterNotice(); // 注册相关监听器
-            AgentList.Set(); // 初始化员工列表
-            infectionTimer.StartTimer(1f); // 启动1s周期计时器
-           
-            animscript.StartCoroutine(InitDayTypeConfig(0.5f)); // 打印相关log，注册监听器需要时间，为保证log得以出现，故延时运行
+            RegisterNotice();
+            AgentList.Set();
+            infectionTimer.StartTimer(1f);
+
+            animscript.StartCoroutine(InitDayTypeConfig(CreatureUtils.DEFAULT_DELAY_TIME));
         }
 
         public override void OnFinishWork(UseSkill skill)
         {
             base.OnFinishWork(skill);
 
-            CreatureUtils.TryUnlockRecover(_todayType); // 每次工作后解锁一次恢复机制（若锁定）
+            string result = CreatureUtils.TryUnlockRecover(CreatureUtils.StatusType.Work);
+            if (result != null) EnqueueMessage(result);
 
             AgentModel agent = skill.agent;
 
-            if (agent.HasEquipment(83400)) // 83400：原型武器装备ID - 工作时若配备原型武器，则分发装备
+            if (agent.HasEquipment(83400))
             {
                 animscript.StartCoroutine(CreatureUtils.SpawnEquipmentsToInventory(CreatureUtils.EquipmentPlan));
             }
 
-            if (agent.HasEquipment(83211)) // 83211：特定批次步枪装备ID - 工作时如若配备步枪的特定批次(游戏中存在标识)，则分发饰品 & 统一员工发型
+            if (agent.HasEquipment(83211))
             {
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.DistributeGiftToAgent));
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.MakeBald));
             }
 
-            animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels)); //每次工作后增加所有异想体的计数器和 pebox
-
+            animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels));
         }
 
         public override void OnStageEnd()
         {
             base.OnStageEnd();
 
-            DeregisterNotice(); // 注销相关监听器
+            DeregisterNotice();
             AgentList.Clear();
-            MoneyModel.instance.Add(creatureModels.Length); // 每天结束固定加lob，增加值为当天异想体数量。
-
+            MoneyModel.instance.Add(creatureModels.Length);
         }
 
         public void OnNotice(string notice, params object[] param)
@@ -73,67 +73,75 @@ namespace Creature
 
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
             {
-                // 仅 Malkuth 或 Day47 才更新工作映射
-                if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
+                int level = CreatureOverloadManager.instance.GetQliphothOverloadLevel();
+
+                if (isMalkuth)
                 {
+                    EnqueueMessage(LocalTexts.MALKUTH_ACTIVATE);
                     CreatureUtils.LogWorkMap();
                 }
 
-                // 仅 Yesod 或 Day47 才销毁滤镜
-                if (_todayType == CreatureUtils.DayType.D47 || _todayType == CreatureUtils.DayType.YESOD)
+                if (isYesod && level >= 2)
                 {
-                    int level = CreatureOverloadManager.instance.GetQliphothOverloadLevel();
-                    if (level >= 2)
-                    {
-                        animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed());
-                    }
+                    animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed(CreatureUtils.DEFAULT_DELAY_TIME));
+                    EnqueueMessage(LocalTexts.YESOD_ACTIVATE);
                 }
 
-                // 每次融毁后解锁一次恢复机制（若锁定）
-                CreatureUtils.TryUnlockRecover(_todayType);
+                string result = CreatureUtils.TryUnlockRecover(CreatureUtils.StatusType.Notice);
+                if (result != null) EnqueueMessage(result);
             }
-
         }
-
 
         public override void OnFixedUpdate(CreatureModel creature)
         {
             base.OnFixedUpdate(creature);
 
-            // 计时器未启动/未到周期 → 跳过后续逻辑（周期为1s）
-            if (!infectionTimer.started || !infectionTimer.RunTimer()) 
+            if (!infectionTimer.started || !infectionTimer.RunTimer())
             {
                 return;
             }
 
-            // 若感染移除协程未运行（计数器为0），则启动协程处理感染
-            if (_infectionCounter == 0) 
+            if (_infectionCounter == 0)
             {
                 animscript.StartCoroutine(RemoveInfectionShell());
             }
 
-            EnergyModel.instance.AddEnergy(creatureModels.Length); // 每周期固定增加能量，增加值为当天异想体数量
-
+            EnergyModel.instance.AddEnergy(creatureModels.Length);
             infectionTimer.StartTimer(1f);
         }
+
         #endregion
 
         #region 私有方法
-   
-        private IEnumerator InitDayTypeConfig(float delayTime = CreatureUtils.DEFAULT_DELAY_TIME)
+
+        private IEnumerator InitDayTypeConfig(float delayTime)
         {
             yield return new WaitForSeconds(delayTime);
 
-            Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher]今日类型:{0}", _todayType.ToString()) });
+            isD47 = (_todayType == CreatureUtils.DayType.D47);
+            isMalkuth = (_todayType == CreatureUtils.DayType.MALKUTH) || isD47;
+            isYesod = (_todayType == CreatureUtils.DayType.YESOD) || isD47;
+            isNetzach = (_todayType == CreatureUtils.DayType.NETZACH) || isD47;
 
-            if (_todayType == CreatureUtils.DayType.MALKUTH || _todayType == CreatureUtils.DayType.D47)
+            if (isMalkuth)
             {
+                EnqueueMessage(LocalTexts.MALKUTH_INIT);
                 CreatureUtils.LogWorkMap();
             }
 
-            if (_todayType == CreatureUtils.DayType.YESOD || _todayType == CreatureUtils.DayType.D47)
+            if (isYesod)
             {
-                animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed(delayTime));
+                EnqueueMessage(LocalTexts.YESOD_INIT);
+                if (!isD47)
+                {
+                    animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed(delayTime));
+                }
+            }
+
+            if (isNetzach)
+            {
+                string result = CreatureUtils.TryUnlockRecover(CreatureUtils.StatusType.DayInit);
+                if (result != null) EnqueueMessage(result);
             }
 
             yield break;
@@ -152,9 +160,6 @@ namespace Creature
             }
         }
 
-        /// <summary>
-        /// 注册相关监听器
-        /// </summary>
         private void RegisterNotice()
         {
             Notice.instance.Observe(NoticeName.OnAgentDead, this);
@@ -162,9 +167,6 @@ namespace Creature
             Notice.instance.Observe(NoticeName.OnQliphothOverloadLevelChanged, this);
         }
 
-        /// <summary>
-        /// 注销相关监听器
-        /// </summary>
         private void DeregisterNotice()
         {
             Notice.instance.Remove(NoticeName.OnAgentDead, this);
@@ -172,9 +174,66 @@ namespace Creature
             Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
         }
 
+        private void EnqueueMessage(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
+            if (_messageCount >= MAX_MESSAGE_COUNT)
+            {
+                for (int i = 0; i < MAX_MESSAGE_COUNT - 1; i++)
+                {
+                    _messages[i] = _messages[i + 1];
+                }
+                _messageCount = MAX_MESSAGE_COUNT - 1;
+            }
+
+            _messages[_messageCount] = text;
+            _messageCount++;
+
+            if (!_isProcessingMessages)
+            {
+                animscript.StartCoroutine(ProcessMessages());
+            }
+        }
+
+        private IEnumerator ProcessMessages()
+        {
+            if (_isProcessingMessages)
+            {
+                yield break;
+            }
+
+            _isProcessingMessages = true;
+
+            try
+            {
+                int index = 0;
+                while (index < _messageCount)
+                {
+                    string text = _messages[index];
+                    if (!string.IsNullOrEmpty(text))
+                    {
+                        DialogueUtils.SendMessage(text);
+                    }
+
+                    index++;
+                    yield return new WaitForSeconds(CreatureUtils.DEFAULT_DELAY_TIME);
+                }
+            }
+            finally
+            {
+                _messageCount = 0;
+                _isProcessingMessages = false;
+            }
+        }
+
         #endregion
 
         #region 字段
+
         public EGODispatcherAnim animscript;
 
         private readonly Timer infectionTimer = new Timer();
@@ -184,6 +243,17 @@ namespace Creature
         private CreatureUtils.DayType _todayType;
 
         private CreatureModel[] creatureModels;
+
+        private bool isD47;
+        private bool isMalkuth;
+        private bool isYesod;
+        private bool isNetzach;
+
+        // 消息队列（数组实现，完全兼容 .NET 1.0+）
+        private const int MAX_MESSAGE_COUNT = 10;              // 最大消息数量
+        private string[] _messages = new string[MAX_MESSAGE_COUNT]; // 消息数组
+        private int _messageCount = 0;                         // 当前消息数量
+        private bool _isProcessingMessages = false;            // 是否正在处理
 
         #endregion
     }
