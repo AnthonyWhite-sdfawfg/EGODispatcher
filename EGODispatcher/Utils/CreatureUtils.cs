@@ -66,6 +66,8 @@ namespace Utils
         //
         public static string[] WorkType = { "<color=red>本能</color>", "<color=white>洞察</color>", "<color=magenta>沟通</color>", "<color=cyan>压迫</color>" };
 
+        public static int[] targetIds = { 83211, 83212, 83213, 83214 };
+
         #endregion
 
         #region 方法
