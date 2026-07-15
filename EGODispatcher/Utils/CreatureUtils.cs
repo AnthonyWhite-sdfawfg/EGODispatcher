@@ -24,7 +24,7 @@ namespace Utils
         public static readonly int[] GiftKeterCrewMember = new int[] { 82301, 82302, 82303, 82202 };
         public static readonly int[] GiftDefault = new int[] { 82400 };
 
-        public static readonly string[] WorkType = { "<color=red>本能</color>", "<color=white>洞察</color>", "<color=magenta>沟通</color>", "<color=cyan>压迫</color>" };
+        public static readonly string[] WorkType = { "<color=#D92B3B>本能</color>", "<color=#F2F0D0>洞察</color>", "<color=#A057A0>沟通</color>", "<color=#4ECDC4>压迫</color>" };
 
         public static readonly int[] targetIds = { 83211, 83212, 83213, 83214 };
 
@@ -141,7 +141,9 @@ namespace Utils
                 UnitBuf buf = agent.GetUnitBufByType(type);
                 if (buf != null)
                 {
-                    Notice.instance.Send("AddSystemLog", new object[] { string.Format("[EGODispatcher] {0}受到感染，正在清除感染……", agent.name) });
+                    string content = string.Format(LocalTexts.REMOVING_INFECTION, agent.name);
+                    string colorizedContent = LogUtils.Colorize(LogUtils.ColorType.Notice,content);
+                    LogUtils.SendLog(colorizedContent);
                     buf.Destroy();
                     agent.RemoveUnitBuf(buf);
                     agent.GetWorkerUnit().RemoveUnitBuf(buf);

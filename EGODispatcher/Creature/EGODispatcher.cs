@@ -40,12 +40,14 @@ namespace Creature
             if (agent.HasEquipment(83400))
             {
                 animscript.StartCoroutine(CreatureUtils.SpawnEquipmentsToInventory(CreatureUtils.EquipmentPlan));
+                EnqueueMessage(LocalTexts.EGO_DELIVERED);
             }
 
             if (Array.Exists(CreatureUtils.targetIds, id => agent.HasEquipment(id)))
             {
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.DistributeGiftToAgent));
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.MakeBald));
+                EnqueueMessage(LocalTexts.ATTACHMENT_DELIVERED);
             }
 
             animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels));
@@ -131,6 +133,7 @@ namespace Creature
                 if (!isD47)
                 {
                     animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed(delayTime));
+                    EnqueueMessage(LocalTexts.YESOD_ACTIVATE);
                 }
             }
 
@@ -246,7 +249,7 @@ namespace Creature
         private bool isNetzach;
 
         // 消息队列（数组实现，完全兼容 .NET 1.0+）
-        private const int MAX_MESSAGE_COUNT = 10;              // 最大消息数量
+        private static readonly int MAX_MESSAGE_COUNT = 10;              // 最大消息数量
         private string[] _messages = new string[MAX_MESSAGE_COUNT]; // 消息数组
         private int _messageCount = 0;                         // 当前消息数量
         private bool _isProcessingMessages = false;            // 是否正在处理
