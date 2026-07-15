@@ -19,15 +19,12 @@ namespace Creature
         public override void OnStageStart()
         {
             base.OnStageStart();
-
             _infectionCounter = 0;
             _todayType = CreatureUtils.GetTodayType();
             creatureModels = CreatureManager.instance.GetCreatureList();
-
             RegisterNotice();
             AgentList.Set();
             infectionTimer.StartTimer(1f);
-
             animscript.StartCoroutine(InitDayTypeConfig(CreatureUtils.DEFAULT_DELAY_TIME));
         }
 
@@ -146,12 +143,12 @@ namespace Creature
             yield break;
         }
 
-        private IEnumerator RemoveInfectionShell(int batch = CreatureUtils.DEFAULT_BATCH_SIZE)
+        private IEnumerator RemoveInfectionShell()
         {
             _infectionCounter++;
             try
             {
-                yield return CreatureUtils.AgentBatchProcess(CreatureUtils.RemoveInfection, batch);
+                yield return CreatureUtils.AgentBatchProcess(CreatureUtils.RemoveInfection);
             }
             finally
             {
