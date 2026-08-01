@@ -22,6 +22,9 @@ namespace Creature
             _infectionCounter = 0;
             _todayType = CreatureUtils.GetTodayType();
             creatureModels = CreatureManager.instance.GetCreatureList();
+            addings = creatureModels.Length;
+            lobCounter = 0;
+            lobTrigger = false;
             RegisterNotice();
             AgentList.Set();
             infectionTimer.StartTimer(1f);
@@ -49,6 +52,13 @@ namespace Creature
                 animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.MakeBald));
                 EnqueueMessage(LocalTexts.ATTACHMENT_DELIVERED);
             }
+
+            if (lobTrigger == false) // 每日首次工作后触发lobTrigger
+            {
+                lobTrigger = true;
+                EnqueueMessage(LocalTexts.GENERATING_LOB);
+            }
+
 
             animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels));
         }
@@ -104,7 +114,14 @@ namespace Creature
                 animscript.StartCoroutine(RemoveInfectionShell());
             }
 
-            EnergyModel.instance.AddEnergy(creatureModels.Length);
+            if (lobTrigger && lobCounter < LOB_MAX_VALUE) // 如果lobTrigger被触发且没有达到每日限量，则每周期固定增加lob，增加值为当天异想体数量
+            {
+                MoneyModel.instance.Add(addings);
+                lobCounter += addings;
+            }
+
+
+            EnergyModel.instance.AddEnergy(addings);
             infectionTimer.StartTimer(1f);
         }
 
@@ -180,6 +197,7 @@ namespace Creature
                 return;
             }
 
+            // 如果队列已满，执行左移操作，丢弃最早的消息（FIFO）
             if (_messageCount >= MAX_MESSAGE_COUNT)
             {
                 for (int i = 0; i < MAX_MESSAGE_COUNT - 1; i++)
@@ -224,6 +242,7 @@ namespace Creature
             }
             finally
             {
+                // 无论是否发生异常，处理完成后都清空队列并重置处理标志
                 _messageCount = 0;
                 _isProcessingMessages = false;
             }
@@ -248,9 +267,13 @@ namespace Creature
         private bool isYesod;
         private bool isNetzach;
 
-        // 消息队列（数组实现，完全兼容 .NET 1.0+）
+        private bool lobTrigger = false;
+        private int addings;
+        private int lobCounter;
+        private static readonly int LOB_MAX_VALUE = 300;
+
         private static readonly int MAX_MESSAGE_COUNT = 10;              // 最大消息数量
-        private string[] _messages = new string[MAX_MESSAGE_COUNT]; // 消息数组
+        private readonly string[] _messages = new string[MAX_MESSAGE_COUNT]; // 消息数组
         private int _messageCount = 0;                         // 当前消息数量
         private bool _isProcessingMessages = false;            // 是否正在处理
 
