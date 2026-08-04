@@ -4,10 +4,9 @@ namespace Armors
 {
     /// <summary>
     /// 护甲核心逻辑统一管理脚本
-    /// 1. 根据员工战斗参数（CombatMode）设定恢复的周期与比例；
-    /// 2. 生命值/精神值低于阈值时修改防御属性；
-    /// 3. 武器准备/受击时触发屏障、移速加成等护甲特有效果；
-    /// 4. 所有数值常量/结构体/工具方法依赖 ArmorUtils 定义。
+    /// 1. 根据员工战斗参数（CombatMode）设定恢复的周期与比例，战斗参数由该员工携带的武器类型决定；
+    /// 2. 生命值/精神值低于阈值时修改对应的指定伤害类型的承伤修正比；
+    /// 3. 参战/受击时触发屏障、移速加成等护甲特有效果；
     /// </summary>
     public class ArmorUnified : EquipmentScriptBase
     {
@@ -47,7 +46,7 @@ namespace Armors
             HealTimer.StartTimer(timerInterval);
         }
 
-        public override DefenseInfo GetDefense(UnitModel actor)
+        public override DefenseInfo GetDefense(UnitModel actor) // 这里的Defence其实应该理解为承伤修正比
         {
             DefenseInfo defenseInfo = base.GetDefense(actor).Copy();
 

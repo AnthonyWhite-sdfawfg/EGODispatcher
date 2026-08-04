@@ -7,8 +7,8 @@ namespace Bufs
     /// </summary>
 	public class DebufDamageMultiply : UnitBuf
 	{
-        /// <param name="reproducible">是否可以堆叠；</param>
-        /// <param name="multiply">倍率，1.5对应着原伤害的150%；</param>
+        /// <param name="reproducible">是否可以堆叠</param>
+        /// <param name="multiply">倍率，1.5对应着原伤害的150%</param>
         /// <param name="duration">该buf的持续时间，单位为秒</param>
 		public DebufDamageMultiply(bool reproducible = false, float multiply = 1.5f, float duration = 5f)
 		{

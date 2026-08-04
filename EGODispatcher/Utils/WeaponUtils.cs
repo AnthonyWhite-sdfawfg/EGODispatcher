@@ -8,7 +8,7 @@ namespace Utils
         #region 方法
 
         /// <summary>
-        /// 取目标的最弱抗性(数值越大越弱，越小越强，0代表免疫，负值代表吸收)
+        /// 取目标的最高承伤修正比的伤害类型
         /// </summary>
         public static RwbpType GetWeakestDefenseType(UnitModel target)
         {
@@ -41,7 +41,7 @@ namespace Utils
         }
 
         /// <summary>
-        /// 检测目标是否有数值低于0（免疫或吸收）的抗性
+        /// 检测目标是否有数值低于0（免疫或吸收）的承伤修正比
         /// </summary>
 		public static bool HasImmuneDefense(UnitModel target)
         {
