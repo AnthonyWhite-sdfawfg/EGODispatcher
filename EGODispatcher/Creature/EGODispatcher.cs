@@ -138,6 +138,15 @@ namespace Creature
             isYesod = (_todayType == CreatureUtils.DayType.YESOD) || isD47;
             isNetzach = (_todayType == CreatureUtils.DayType.NETZACH) || isD47;
 
+            if (isD47 || isMalkuth || isYesod || isNetzach )
+            {
+                EnqueueMessage(LocalTexts.SYSTEM_ONLINE_SUPPRESSION);
+            }
+            else
+            {
+                EnqueueMessage(LocalTexts.SYSTEM_ONLINE_REGULAR);
+            }
+
             if (isMalkuth)
             {
                 EnqueueMessage(LocalTexts.MALKUTH_INIT);
