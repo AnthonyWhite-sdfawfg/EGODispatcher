@@ -1,15 +1,15 @@
-﻿using Utils;
-using Bufs;
+﻿using Equipments.Bufs;
+using Equipments.Tools;
 
-namespace Weapons
+namespace Equipments.Core
 {
     class WeaponCannon : EquipmentScriptBase
     {
         public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
         {
-            overrideDamageType = WeaponUtils.HasImmuneDefense(target);
-            dmgType = WeaponUtils.GetWeakestDefenseType(target);
-            dotConfigCannon = new WeaponUtils.DotConfig(overrideDamageType, dmgType, 10f, 20f, 0.1f);
+            overrideDamageType = WeaponTools.HasImmuneDefense(target);
+            dmgType = WeaponTools.GetWeakestDefenseType(target);
+            dotConfigCannon = new WeaponTools.DotConfig(overrideDamageType, dmgType, 10f, 20f, 0.1f);
             return base.OnAttackStart(actor, target);
         }
         public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
@@ -30,6 +30,6 @@ namespace Weapons
 
         bool overrideDamageType;
         private RwbpType dmgType;
-        private WeaponUtils.DotConfig dotConfigCannon;
+        private WeaponTools.DotConfig dotConfigCannon;
     }
 }

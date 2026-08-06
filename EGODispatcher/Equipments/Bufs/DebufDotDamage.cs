@@ -1,6 +1,6 @@
-﻿using Utils;
+﻿using Equipments.Tools;
 
-namespace Bufs
+namespace Equipments.Bufs
 {
     /// <summary>
     /// Debuff，为敌对目标施加一个DOT伤害，以config结构体作为参数传入
@@ -8,7 +8,7 @@ namespace Bufs
 	public class DebufDotDamage : UnitBuf
 	{
         /// <param name="config">DOT伤害相关参数，以struct的形式传入</param>
-        public DebufDotDamage(WeaponUtils.DotConfig config)
+        public DebufDotDamage(WeaponTools.DotConfig config)
         {
             _overrideDamageType = config.overrideDamageType;
             _totalDuration = config.totalDuration;
@@ -39,9 +39,13 @@ namespace Bufs
 			{
 				if (_overrideDamageType)
 				{
-					for (int j = 0; j < 4; j++)
+					for (int j = 0; j < 2; j++)
 					{
-						model.TakeDamage(new DamageInfo(_damageType, _tickDamage));
+                        model.TakeDamage(new DamageInfo(_damageType, _tickDamage));
+                        if (model.hp>0) {
+                            model.hp -= _tickDamage;
+                        }
+
 					}
 				}
 				else

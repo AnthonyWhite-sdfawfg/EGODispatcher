@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Creature;
 
 
-namespace Utils
+namespace Equipments.Tools
 {
-    public static class ArmorUtils
+    public static class ArmorTools
     {
 
         #region 静态字段
@@ -48,11 +48,11 @@ namespace Utils
 
         public static readonly Dictionary<CombatMode, int[]> CombatModeToGiftMap = new Dictionary<CombatMode, int[]>
         {
-            { CombatMode.Worker, CreatureUtils.GiftWorker },
-            { CombatMode.Operative, CreatureUtils.GiftOperative },
-            { CombatMode.KeterCrewMember, CreatureUtils.GiftKeterCrewMember },
-            { CombatMode.Prototype, CreatureUtils.GiftKeterCrewMember }, 
-            { CombatMode.None, CreatureUtils.GiftDefault }
+            { CombatMode.Worker, CreatureTools.GiftWorker },
+            { CombatMode.Operative, CreatureTools.GiftOperative },
+            { CombatMode.KeterCrewMember, CreatureTools.GiftKeterCrewMember },
+            { CombatMode.Prototype, CreatureTools.GiftKeterCrewMember }, 
+            { CombatMode.None, CreatureTools.GiftDefault }
         };
 
 
@@ -135,7 +135,7 @@ namespace Utils
             {
                 return CombatMode.None;
             }
-            switch (EquipmentTypeInfo.GetLcId(worker.Equipment.weapon.metaInfo).id / ArmorUtils.ID_DIGIT % 10)
+            switch (EquipmentTypeInfo.GetLcId(worker.Equipment.weapon.metaInfo).id / ArmorTools.ID_DIGIT % 10)
             {
                 case 1:
                     return CombatMode.Worker;

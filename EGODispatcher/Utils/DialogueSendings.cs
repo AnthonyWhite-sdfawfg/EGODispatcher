@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Utils
 {
 
-    public static class DialogueUtils
+    public static class DialogueSendings
     {
         private static string ModRootPath
         {

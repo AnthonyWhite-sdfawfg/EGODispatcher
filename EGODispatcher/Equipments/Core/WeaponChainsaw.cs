@@ -1,9 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Bufs;
-using Utils;
+﻿using System.Collections.Generic;
+using Equipments.Bufs;
+using Equipments.Tools;
 
-namespace Weapons
+namespace Equipments.Core
 {
 	public class WeaponChainsaw : EquipmentScriptBase
 	{
@@ -11,10 +10,10 @@ namespace Weapons
 		{
 
 			List<DamageInfo> list = new List<DamageInfo>();
-			if (WeaponUtils.HasImmuneDefense(target))
+			if (WeaponTools.HasImmuneDefense(target))
 			{
 				overrideDamageType = true;
-				dmgType = WeaponUtils.GetWeakestDefenseType(target);
+				dmgType = WeaponTools.GetWeakestDefenseType(target);
 				for (int i = 0; i < 25; i++)
 				{
 					list.Add(model.metaInfo.damageInfos[0].Copy());
@@ -39,7 +38,12 @@ namespace Weapons
             {
                 dmg.type = dmgType;
             }
+            
             target.AddUnitBuf(new DebufDamageMultiply(true, 2f, 5f));
+
+            if (target.hp>0) {
+                target.hp -= 10f;
+            }
             return base.OnGiveDamage(actor, target, ref dmg);
         }
 

@@ -1,6 +1,4 @@
-using Utils;
-
-namespace Armors
+namespace Equipments.Tools
 {
     /// <summary>
     /// 护甲核心逻辑统一管理脚本
@@ -16,7 +14,7 @@ namespace Armors
             base.OnStageStart();
             owner = model.owner;
             worker = owner as WorkerModel;
-            currentMode = ArmorUtils.CombatMode.None;
+            currentMode = ArmorTools.CombatMode.None;
             SetCombatParams(worker);
         }
 
@@ -31,7 +29,7 @@ namespace Armors
 
             float ratioHP;
             float ratioMental;
-            ArmorUtils.CombatParams combatParams = ArmorUtils.ModeToValues[currentMode];
+            ArmorTools.CombatParams combatParams = ArmorTools.ModeToValues[currentMode];
             if (worker.IsPanic())
             {
                 ratioHP = combatParams.HpPanic;       
@@ -42,7 +40,7 @@ namespace Armors
                 ratioHP = combatParams.HpNormal;      
                 ratioMental = combatParams.MpNormal;  
             }
-            ArmorUtils.HealThisWorker(worker, ratioHP, ratioMental);
+            ArmorTools.HealThisWorker(worker, ratioHP, ratioMental);
             HealTimer.StartTimer(timerInterval);
         }
 
@@ -50,17 +48,17 @@ namespace Armors
         {
             DefenseInfo defenseInfo = base.GetDefense(actor).Copy();
 
-            hpMark = actor.maxHp * ArmorUtils.DEFENSE_MARK_RATIO;
-            mpMark = actor.maxMental * ArmorUtils.DEFENSE_MARK_RATIO;
+            hpMark = actor.maxHp * ArmorTools.DEFENSE_MARK_RATIO;
+            mpMark = actor.maxMental * ArmorTools.DEFENSE_MARK_RATIO;
 
             if (actor.hp < hpMark)
             {
-                defenseInfo.R = 0f;
+                defenseInfo.R = 0f; // 免疫
                 defenseInfo.P = 0f;
             }
             if (actor.mental < mpMark)
             {
-                defenseInfo.W = -0.1f;
+                defenseInfo.W = -0.1f; // 以10%吸收
                 defenseInfo.B = -0.1f;
             }
 
@@ -69,27 +67,27 @@ namespace Armors
 
         public override void OnPrepareWeapon(UnitModel actor)
         {
-            if (ArmorUtils.ShouldAddBarrier(actor))
+            if (ArmorTools.ShouldAddBarrier(actor))
             {
                 actor.AddUnitBuf(new BarrierBuf(
                     RwbpType.A,
-                    ArmorUtils.BARRIER_ON_PREPARE_VALUE,
-                    ArmorUtils.BARRIER_ON_PREPARE_DURATION
+                    ArmorTools.BARRIER_ON_PREPARE_VALUE,
+                    ArmorTools.BARRIER_ON_PREPARE_DURATION
                 ));
             }
-            actor.AddUnitBuf(CreateSpeedBuf(ArmorUtils.SPEED_BUF_DURATION, ArmorUtils.SPEED_BUF_VALUE));
+            actor.AddUnitBuf(CreateSpeedBuf(ArmorTools.SPEED_BUF_DURATION, ArmorTools.SPEED_BUF_VALUE));
             base.OnPrepareWeapon(actor);
         }
 
         public override bool OnTakeDamage(UnitModel actor, ref DamageInfo dmg)
         {
             if (owner == null) return false;
-            if (ArmorUtils.ShouldAddBarrier(actor))
+            if (ArmorTools.ShouldAddBarrier(actor))
             {
                 actor.AddUnitBuf(new BarrierBuf(
                     RwbpType.A,
-                    ArmorUtils.BARRIER_ON_HIT_VALUE,
-                    ArmorUtils.BARRIER_ON_HIT_DURATION
+                    ArmorTools.BARRIER_ON_HIT_VALUE,
+                    ArmorTools.BARRIER_ON_HIT_DURATION
                 ));
                 return false;
             }
@@ -99,13 +97,19 @@ namespace Armors
 
         #region 私有工具方法
 
+        /// <summary>
+        /// 读取战斗参数，设定恢复周期与比例
+        /// </summary>
         private void SetCombatParams(WorkerModel worker)
         {
-            currentMode = ArmorUtils.ResolveCombatMode(worker);
-            timerInterval = ArmorUtils.ModeToValues[currentMode].TimerInterval;
+            currentMode = ArmorTools.ResolveCombatMode(worker);
+            timerInterval = ArmorTools.ModeToValues[currentMode].TimerInterval;
             HealTimer.StartTimer(timerInterval);
         }
 
+        /// <summary>
+        /// 创建加速buf
+        /// </summary>
         private UnitStatBuf CreateSpeedBuf(float duration, float value)
         {
             return new UnitStatBuf(duration, UnitBufType.ADD_SUPERARMOR)
@@ -131,7 +135,7 @@ namespace Armors
         private UnitModel owner;
 
         // 当前模式，用于匹配恢复参数
-        private ArmorUtils.CombatMode currentMode;
+        private ArmorTools.CombatMode currentMode;
         #endregion
     }
 }

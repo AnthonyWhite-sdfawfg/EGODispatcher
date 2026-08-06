@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Text;
 
@@ -8,7 +7,7 @@ namespace Utils
     /// <summary>
     /// AgentManager.instance.GetAgentList()取得结果既包括存活员工也包括死亡员工，因此建表来单独管理员工
     /// </summary>
-	public static class AgentList
+	public static class ActiveAgentManager
 	{
 		public static ReadOnlyCollection<AgentModel> Agents
 		{

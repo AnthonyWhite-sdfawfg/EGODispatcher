@@ -1,14 +1,13 @@
-﻿using System;
-using Bufs;
-using Utils;
+﻿using Equipments.Bufs;
+using Equipments.Tools;
 
-namespace Weapons
+namespace Equipments.Core
 {
 	public class WeaponShotgun : EquipmentScriptBase
 	{
 		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
-			this.dmgType = WeaponUtils.GetWeakestDefenseType(target);
+			this.dmgType = WeaponTools.GetWeakestDefenseType(target);
             return base.OnAttackStart(actor, target);
 		}
         public override bool OnGiveDamage(UnitModel actor, UnitModel target, ref DamageInfo dmg)
@@ -27,6 +26,7 @@ namespace Weapons
             {
                 target.AddUnitBuf(new DebufSlowDown(2f, 0.5f));
                 target.AddUnitBuf(new DebufDamageMultiply(true, 1.2f, 5f));
+                target.hp -= 5f;
             }
             base.OnGiveDamageAfter(actor, target, dmg);
         }
