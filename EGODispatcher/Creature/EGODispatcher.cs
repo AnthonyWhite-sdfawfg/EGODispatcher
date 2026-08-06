@@ -19,8 +19,8 @@ namespace Creature
         public override void OnStageStart()
         {
             base.OnStageStart();
-            _infectionCounter = 0;
-            _todayType = CreatureUtils.GetTodayType();
+            infectionCounter = 0;
+            todayType = CreatureUtils.GetTodayType();
             creatureModels = CreatureManager.instance.GetCreatureList();
             addings = creatureModels.Length;
             lobCounter = 0;
@@ -109,7 +109,7 @@ namespace Creature
                 return;
             }
 
-            if (_infectionCounter == 0)
+            if (infectionCounter == 0)
             {
                 animscript.StartCoroutine(RemoveInfectionShell());
             }
@@ -133,10 +133,11 @@ namespace Creature
         {
             yield return new WaitForSeconds(delayTime);
 
-            isD47 = (_todayType == CreatureUtils.DayType.D47);
-            isMalkuth = (_todayType == CreatureUtils.DayType.MALKUTH) || isD47;
-            isYesod = (_todayType == CreatureUtils.DayType.YESOD) || isD47;
-            isNetzach = (_todayType == CreatureUtils.DayType.NETZACH) || isD47;
+            isD47 = (todayType == CreatureUtils.DayType.D47);
+            isMalkuth = (todayType == CreatureUtils.DayType.MALKUTH) || isD47;
+            isYesod = (todayType == CreatureUtils.DayType.YESOD) || isD47;
+            isNetzach = (todayType == CreatureUtils.DayType.NETZACH) || isD47;
+            isHod = (todayType == CreatureUtils.DayType.HOD) || isD47;
 
             if (isD47 || isMalkuth || isYesod || isNetzach )
             {
@@ -169,19 +170,25 @@ namespace Creature
                 if (result != null) EnqueueMessage(result);
             }
 
+            if (isHod)
+            {
+                EnqueueMessage(LocalTexts.HOD_INIT);
+            }
+
+
             yield break;
         }
 
         private IEnumerator RemoveInfectionShell()
         {
-            _infectionCounter++;
+            infectionCounter++;
             try
             {
                 yield return CreatureUtils.AgentBatchProcess(CreatureUtils.RemoveInfection);
             }
             finally
             {
-                _infectionCounter--;
+                infectionCounter--;
             }
         }
 
@@ -207,19 +214,19 @@ namespace Creature
             }
 
             // 如果队列已满，执行左移操作，丢弃最早的消息（FIFO）
-            if (_messageCount >= MAX_MESSAGE_COUNT)
+            if (messageCount >= MAX_MESSAGE_COUNT)
             {
                 for (int i = 0; i < MAX_MESSAGE_COUNT - 1; i++)
                 {
-                    _messages[i] = _messages[i + 1];
+                    messages[i] = messages[i + 1];
                 }
-                _messageCount = MAX_MESSAGE_COUNT - 1;
+                messageCount = MAX_MESSAGE_COUNT - 1;
             }
 
-            _messages[_messageCount] = text;
-            _messageCount++;
+            messages[messageCount] = text;
+            messageCount++;
 
-            if (!_isProcessingMessages)
+            if (!isProcessingMessages)
             {
                 animscript.StartCoroutine(ProcessMessages());
             }
@@ -227,19 +234,19 @@ namespace Creature
 
         private IEnumerator ProcessMessages()
         {
-            if (_isProcessingMessages)
+            if (isProcessingMessages)
             {
                 yield break;
             }
 
-            _isProcessingMessages = true;
+            isProcessingMessages = true;
 
             try
             {
                 int index = 0;
-                while (index < _messageCount)
+                while (index < messageCount)
                 {
-                    string text = _messages[index];
+                    string text = messages[index];
                     if (!string.IsNullOrEmpty(text))
                     {
                         DialogueUtils.SendMessage(text);
@@ -252,8 +259,8 @@ namespace Creature
             finally
             {
                 // 无论是否发生异常，处理完成后都清空队列并重置处理标志
-                _messageCount = 0;
-                _isProcessingMessages = false;
+                messageCount = 0;
+                isProcessingMessages = false;
             }
         }
 
@@ -262,19 +269,18 @@ namespace Creature
         #region 字段
 
         public EGODispatcherAnim animscript;
-
         private readonly Timer infectionTimer = new Timer();
 
-        private int _infectionCounter = 0;
-
-        private CreatureUtils.DayType _todayType;
-
+        private CreatureUtils.DayType todayType;
         private CreatureModel[] creatureModels;
+
+        private int infectionCounter = 0;
 
         private bool isD47;
         private bool isMalkuth;
         private bool isYesod;
         private bool isNetzach;
+        private bool isHod;
 
         private bool lobTrigger = false;
         private int addings;
@@ -282,9 +288,9 @@ namespace Creature
         private static readonly int LOB_MAX_VALUE = 300;
 
         private static readonly int MAX_MESSAGE_COUNT = 10;              // 最大消息数量
-        private readonly string[] _messages = new string[MAX_MESSAGE_COUNT]; // 消息数组
-        private int _messageCount = 0;                         // 当前消息数量
-        private bool _isProcessingMessages = false;            // 是否正在处理
+        private readonly string[] messages = new string[MAX_MESSAGE_COUNT]; // 消息数组
+        private int messageCount = 0;                         // 当前消息数量
+        private bool isProcessingMessages = false;            // 是否正在处理
 
         #endregion
     }
