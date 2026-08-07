@@ -4,15 +4,19 @@ using System.Collections.Generic;
 using System.Text;
 using LobotomyBaseMod;
 using UnityEngine;
+using Utils;
+using Equipments.Tools;
 
-namespace Utils
+namespace Creature
 {
-    public static class CreatureUtils
+    public static class CreatureTools
     {
         #region 常量字段
 
         public const int DEFAULT_BATCH_SIZE = 5;
-        public const float DEFAULT_DELAY_TIME = 0.5F;
+        public static readonly float DEFAULT_DELAY_TIME = 0.5F;
+        public static readonly int LOB_MAX_VALUE = 300;
+        public static readonly int MAX_MESSAGE_COUNT = 10;
 
         #endregion
 
@@ -26,7 +30,7 @@ namespace Utils
 
         public static readonly string[] WorkType = { "<color=#D92B3B>本能</color>", "<color=#F2F0D0>洞察</color>", "<color=#A057A0>沟通</color>", "<color=#4ECDC4>压迫</color>" };
 
-        public static readonly int[] targetIds = { 83211, 83212, 83213, 83214 };
+        public static readonly int[] getAttachmentIds = { 83211, 83212, 83213, 83214 };
 
         // 感染Buf数组
         public static readonly UnitBufType[] InfectionBufTypes =
@@ -70,6 +74,19 @@ namespace Utils
         #endregion
 
         #region 方法
+
+        /// <summary>
+        /// [处理异想体]迭代器，异想体计数器+1，增加 pebox
+        /// </summary>
+        public static IEnumerator CreatureProcess(CreatureModel[] creatures)
+        {
+            for (int i = 0; i < creatures.Length; i++)
+            {
+                creatures[i].AddQliphothCounter();
+                creatures[i].AddCreatureSuccessCube(10);
+                yield return new WaitForEndOfFrame();
+            }
+        }
 
         /// <summary>
         /// [ExoSuit]迭代器，生成所有 EXOSuit 装备
@@ -117,13 +134,13 @@ namespace Utils
         }
 
         /// <summary>
-        ///  [ExoSuit]复用ArmorUtils解析并通过映射取数组
+        ///  [ExoSuit]复用ArmorTools解析并通过映射取数组
         /// </summary>
         public static int[] ResolveID(AgentModel ag)
         {
             WorkerModel workerModel = ag as WorkerModel;
-            ArmorUtils.CombatMode mode = ArmorUtils.ResolveCombatMode(workerModel);
-            if (ArmorUtils.CombatModeToGiftMap.TryGetValue(mode, out int[] giftIds))
+            ArmorTools.CombatMode mode = ArmorTools.ResolveCombatMode(workerModel);
+            if (ArmorTools.CombatModeToGiftMap.TryGetValue(mode, out int[] giftIds))
             {
                 return giftIds;
             }
@@ -142,8 +159,8 @@ namespace Utils
                 if (buf != null)
                 {
                     string content = string.Format(LocalTexts.REMOVING_INFECTION, agent.name);
-                    string colorizedContent = LogUtils.Colorize(LogUtils.ColorType.Notice,content);
-                    LogUtils.SendLog(colorizedContent);
+                    string colorizedContent = LogSendings.Colorize(LogSendings.ColorType.Notice,content);
+                    LogSendings.SendLog(colorizedContent);
                     buf.Destroy();
                     agent.RemoveUnitBuf(buf);
                     agent.GetWorkerUnit().RemoveUnitBuf(buf);
@@ -152,142 +169,11 @@ namespace Utils
         }
 
         /// <summary>
-        /// [通用]取今日类型
-        /// </summary>
-        public static DayType GetTodayType()
-        {
-            var mgr = SefiraBossManager.Instance;
-
-            // Day 47 构筑部（Kether-E1）
-            if (mgr.IsKetherBoss(KetherBossType.E1))
-                return DayType.D47;
-            // 各核心抑制
-            if (mgr.CheckBossActivation(SefiraEnum.MALKUT))
-                return DayType.MALKUTH;
-            if (mgr.CheckBossActivation(SefiraEnum.YESOD))
-                return DayType.YESOD;
-            if (mgr.CheckBossActivation(SefiraEnum.NETZACH))
-                return DayType.NETZACH;
-            if (mgr.CheckBossActivation(SefiraEnum.HOD))
-                return DayType.HOD;
-
-            return DayType.NONE;
-        }
-
-        /// <summary>
-        /// [Netzach]解锁恢复机制
-        /// </summary>
-        public static string TryUnlockRecover(StatusType statusType)
-        {
-            var mgr = SefiraBossManager.Instance;
-            bool wasBlocked = mgr.IsRecoverBlocked;
-
-            // 如果需要解锁，先执行解锁
-            if (wasBlocked)
-            {
-                mgr.SetRecoverBlockState(false);
-            }
-
-            // 根据状态类型和是否解锁返回对应的消息
-            switch (statusType)
-            {
-                case StatusType.DayInit:
-                    return LocalTexts.NETZACH_INIT;
-                case StatusType.Notice:
-                    return wasBlocked ? LocalTexts.NETZACH_ACTIVATE : LocalTexts.NETZACH_SELF_TEST_CLEAR;
-                case StatusType.Work:
-                    return wasBlocked ? LocalTexts.NETZACH_MANUAL_OVERRIDE : null; 
-                default:
-                    return "unnoticed situation!";
-            }
-        }
-
-        /// <summary>
-        /// [Malkuth]取 Malkuth 打乱的工作映射
-        /// </summary>
-        public static int[] GetWorkMap()
-        {
-            var mgr = SefiraBossManager.Instance;
-            int[] map = new int[4];
-            for (int i = 1; i <= 4; i++)
-                map[i - 1] = mgr.GetWorkId(i);
-            return map;
-        }
-
-        /// <summary>
-        /// [Malkuth]在 systemLog 中显示工作映射
-        /// </summary>
-        public static void LogWorkMap()
-        {
-            int[] map = GetWorkMap();
-            
-            StringBuilder sb = new StringBuilder();
-            sb.AppendLine("[EGODispatcher] 指令映射表（当前过载等级 " + CreatureOverloadManager.instance.GetQliphothOverloadLevel() + "）:");
-            for (int i = 0; i < 4; i++)
-            {
-                sb.AppendLine(string.Format("  [{0}] {1} → {2}", i + 1, WorkType[i], WorkType[map[i] - 1]));
-            }
-
-            Notice.instance.Send(NoticeName.AddSystemLog, new object[] { sb.ToString() });
-        }
-
-        /// <summary>
-        /// [Yesod]核心方法，销毁主 Camera 和 UI Camera 的像素化滤镜
-        /// </summary>
-        public static void ClearYesodFilters()
-        {
-            // 销毁主 Camera
-            Camera mainCam = Camera.main;
-            if (mainCam)
-            {
-                var pix = mainCam.GetComponent<CameraFilterPack_Pixel_Pixelisation>();
-                if (pix)
-                {
-                    UnityEngine.Object.DestroyImmediate(pix);
-                }
-            }
-
-            // 销毁 UI Camera
-            Camera uiCam = UIActivateManager.instance?.GetCam();
-            if (uiCam)
-            {
-                var pix = uiCam.GetComponent<CameraFilterPack_Pixel_Pixelisation>();
-                if (pix)
-                {
-                    UnityEngine.Object.DestroyImmediate(pix); 
-                }
-            }
-        }
-
-        /// <summary>
-        /// [Yesod]迭代器外壳，因为未知原因，滤镜需要延迟一段时间后才能进行销毁
-        /// </summary>
-        public static IEnumerator ClearPixelDelayed(float delayTime)
-        {
-            yield return new WaitForSeconds(delayTime);
-            ClearYesodFilters();
-        }
-
-        /// <summary>
-        /// [处理异想体]迭代器，异想体计数器+1，增加 pebox
-        /// </summary>
-        public static IEnumerator CreatureProcess(CreatureModel[] creatures)
-        {
-            for (int i = 0; i < creatures.Length; i++)
-            {
-                creatures[i].AddQliphothCounter();
-                creatures[i].AddCreatureSuccessCube(10);
-                yield return new WaitForEndOfFrame();
-            }
-        }
-
-
-        /// <summary>
         /// [批处理协程]处理全体员工时使用：依据传参数量分组进行处理；
         /// </summary>
-        public static IEnumerator AgentBatchProcess(Action<AgentModel> processAction, int batch = DEFAULT_BATCH_SIZE)
+        public static IEnumerator AgentBatchProcess(Action<AgentModel> processAction, int batch)
         {
-            List<AgentModel> snapshot = new List<AgentModel>(AgentList.Agents);
+            List<AgentModel> snapshot = new List<AgentModel>(ActiveAgentManager.Agents);
             if (snapshot.Count == 0) yield break;
 
             for (int i = 0; i < snapshot.Count; i += batch)
@@ -322,7 +208,129 @@ namespace Utils
             target.GetWorkerUnit().spriteSetter.ChangeBasicSpriteData();
         }
 
-        #endregion 
+        #endregion
+
+        #region 核心抑制
+
+        /// <summary>
+        /// [通用]取今日类型
+        /// </summary>
+        public static DayType GetTodayType()
+        {
+            var mgr = SefiraBossManager.Instance;
+
+            // Day 47 构筑部（Kether-E1）
+            if (mgr.IsKetherBoss(KetherBossType.E1))
+                return DayType.D47;
+            // 各核心抑制
+            if (mgr.CheckBossActivation(SefiraEnum.MALKUT))
+                return DayType.MALKUTH;
+            if (mgr.CheckBossActivation(SefiraEnum.YESOD))
+                return DayType.YESOD;
+            if (mgr.CheckBossActivation(SefiraEnum.NETZACH))
+                return DayType.NETZACH;
+            if (mgr.CheckBossActivation(SefiraEnum.HOD))
+                return DayType.HOD;
+
+            return DayType.NONE;
+        }
+
+        /// <summary>
+        /// [Malkuth]取 Malkuth 打乱的工作映射
+        /// </summary>
+        public static int[] GetWorkMap()
+        {
+            var mgr = SefiraBossManager.Instance;
+            int[] map = new int[4];
+            for (int i = 1; i <= 4; i++)
+                map[i - 1] = mgr.GetWorkId(i);
+            return map;
+        }
+
+        /// <summary>
+        /// [Malkuth]在 systemLog 中显示工作映射
+        /// </summary>
+        public static void LogWorkMap()
+        {
+            int[] map = GetWorkMap();
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("[EGODispatcher] 指令映射表（当前过载等级 " + CreatureOverloadManager.instance.GetQliphothOverloadLevel() + "）:");
+            for (int i = 0; i < 4; i++)
+            {
+                sb.AppendLine(string.Format("  [{0}] {1} → {2}", i + 1, WorkType[i], WorkType[map[i] - 1]));
+            }
+
+            Notice.instance.Send(NoticeName.AddSystemLog, new object[] { sb.ToString() });
+        }
+
+        /// <summary>
+        /// [Yesod]核心方法，销毁主 Camera 和 UI Camera 的像素化滤镜
+        /// </summary>
+        public static void ClearYesodFilters()
+        {
+            // 销毁主 Camera
+            Camera mainCam = Camera.main;
+            if (mainCam)
+            {
+                var pix = mainCam.GetComponent<CameraFilterPack_Pixel_Pixelisation>();
+                if (pix)
+                {
+                    UnityEngine.Object.DestroyImmediate(pix);
+                }
+            }
+
+            // 销毁 UI Camera
+            Camera uiCam = UIActivateManager.instance?.GetCam();
+            if (uiCam)
+            {
+                var pix = uiCam.GetComponent<CameraFilterPack_Pixel_Pixelisation>();
+                if (pix)
+                {
+                    UnityEngine.Object.DestroyImmediate(pix);
+                }
+            }
+        }
+
+        /// <summary>
+        /// [Yesod]迭代器外壳，因为未知原因，滤镜需要延迟一段时间后才能进行销毁
+        /// </summary>
+        public static IEnumerator ClearPixelDelayed(float delayTime)
+        {
+            yield return new WaitForSeconds(delayTime);
+            ClearYesodFilters();
+        }
+
+        /// <summary>
+        /// [Netzach]解锁恢复机制
+        /// </summary>
+        public static string TryUnlockRecover(StatusType statusType)
+        {
+            var mgr = SefiraBossManager.Instance;
+            bool wasBlocked = mgr.IsRecoverBlocked;
+
+            // 如果需要解锁，先执行解锁
+            if (wasBlocked)
+            {
+                mgr.SetRecoverBlockState(false);
+            }
+
+            // 根据状态类型和是否解锁返回对应的消息
+            switch (statusType)
+            {
+                case StatusType.DayInit:
+                    return LocalTexts.NETZACH_INIT;
+                case StatusType.Notice:
+                    return wasBlocked ? LocalTexts.NETZACH_ACTIVATE : LocalTexts.NETZACH_SELF_TEST_CLEAR;
+                case StatusType.Work:
+                    return wasBlocked ? LocalTexts.NETZACH_MANUAL_OVERRIDE : null;
+                default:
+                    return "unnoticed situation!";
+            }
+        }
+
+
+        #endregion
     }
 
 }

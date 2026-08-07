@@ -20,36 +20,36 @@ namespace Creature
         {
             base.OnStageStart();
             infectionCounter = 0;
-            todayType = CreatureUtils.GetTodayType();
+            todayType = CreatureTools.GetTodayType();
             creatureModels = CreatureManager.instance.GetCreatureList();
             addings = creatureModels.Length;
             lobCounter = 0;
             lobTrigger = false;
             RegisterNotice();
-            AgentList.Set();
+            ActiveAgentManager.Set();
             infectionTimer.StartTimer(1f);
-            animscript.StartCoroutine(InitDayTypeConfig(CreatureUtils.DEFAULT_DELAY_TIME));
+            animscript.StartCoroutine(InitDayTypeConfig(CreatureTools.DEFAULT_DELAY_TIME));
         }
 
         public override void OnFinishWork(UseSkill skill)
         {
             base.OnFinishWork(skill);
 
-            string result = CreatureUtils.TryUnlockRecover(CreatureUtils.StatusType.Work);
+            string result = CreatureTools.TryUnlockRecover(CreatureTools.StatusType.Work);
             if (result != null) EnqueueMessage(result);
 
             AgentModel agent = skill.agent;
 
             if (agent.HasEquipment(83400))
             {
-                animscript.StartCoroutine(CreatureUtils.SpawnEquipmentsToInventory(CreatureUtils.EquipmentPlan));
+                animscript.StartCoroutine(CreatureTools.SpawnEquipmentsToInventory(CreatureTools.EquipmentPlan));
                 EnqueueMessage(LocalTexts.EGO_DELIVERED);
             }
 
-            if (Array.Exists(CreatureUtils.targetIds, id => agent.HasEquipment(id)))
+            if (Array.Exists(CreatureTools.getAttachmentIds, id => agent.HasEquipment(id)))
             {
-                animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.DistributeGiftToAgent));
-                animscript.StartCoroutine(CreatureUtils.AgentBatchProcess(CreatureUtils.MakeBald));
+                animscript.StartCoroutine(CreatureTools.AgentBatchProcess(CreatureTools.DistributeGiftToAgent, CreatureTools.DEFAULT_BATCH_SIZE));
+                animscript.StartCoroutine(CreatureTools.AgentBatchProcess(CreatureTools.MakeBald, CreatureTools.DEFAULT_BATCH_SIZE));
                 EnqueueMessage(LocalTexts.ATTACHMENT_DELIVERED);
             }
 
@@ -60,7 +60,7 @@ namespace Creature
             }
 
 
-            animscript.StartCoroutine(CreatureUtils.CreatureProcess(creatureModels));
+            animscript.StartCoroutine(CreatureTools.CreatureProcess(creatureModels));
         }
 
         public override void OnStageEnd()
@@ -68,7 +68,7 @@ namespace Creature
             base.OnStageEnd();
 
             DeregisterNotice();
-            AgentList.Clear();
+            ActiveAgentManager.Clear();
             MoneyModel.instance.Add(creatureModels.Length);
         }
 
@@ -76,7 +76,7 @@ namespace Creature
         {
             if (notice == NoticeName.OnAgentDead)
             {
-                AgentList.RemoveDeadAgents();
+                ActiveAgentManager.RemoveDeadAgents();
             }
 
             if (notice == NoticeName.OnQliphothOverloadLevelChanged)
@@ -86,16 +86,16 @@ namespace Creature
                 if (isMalkuth)
                 {
                     EnqueueMessage(LocalTexts.MALKUTH_ACTIVATE);
-                    CreatureUtils.LogWorkMap();
+                    CreatureTools.LogWorkMap();
                 }
 
                 if (isYesod && level >= 2)
                 {
-                    animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed(CreatureUtils.DEFAULT_DELAY_TIME));
+                    animscript.StartCoroutine(CreatureTools.ClearPixelDelayed(CreatureTools.DEFAULT_DELAY_TIME));
                     EnqueueMessage(LocalTexts.YESOD_ACTIVATE);
                 }
 
-                string result = CreatureUtils.TryUnlockRecover(CreatureUtils.StatusType.Notice);
+                string result = CreatureTools.TryUnlockRecover(CreatureTools.StatusType.Notice);
                 if (result != null) EnqueueMessage(result);
             }
         }
@@ -114,7 +114,7 @@ namespace Creature
                 animscript.StartCoroutine(RemoveInfectionShell());
             }
 
-            if (lobTrigger && lobCounter < LOB_MAX_VALUE) // 如果lobTrigger被触发且没有达到每日限量，则每周期固定增加lob，增加值为当天异想体数量
+            if (lobTrigger && lobCounter < CreatureTools.LOB_MAX_VALUE) // 如果lobTrigger被触发且没有达到每日限量，则每周期固定增加lob，增加值为当天异想体数量
             {
                 MoneyModel.instance.Add(addings);
                 lobCounter += addings;
@@ -129,69 +129,9 @@ namespace Creature
 
         #region 私有方法
 
-        private IEnumerator InitDayTypeConfig(float delayTime)
-        {
-            yield return new WaitForSeconds(delayTime);
-
-            isD47 = (todayType == CreatureUtils.DayType.D47);
-            isMalkuth = (todayType == CreatureUtils.DayType.MALKUTH) || isD47;
-            isYesod = (todayType == CreatureUtils.DayType.YESOD) || isD47;
-            isNetzach = (todayType == CreatureUtils.DayType.NETZACH) || isD47;
-            isHod = (todayType == CreatureUtils.DayType.HOD) || isD47;
-
-            if (isD47 || isMalkuth || isYesod || isNetzach )
-            {
-                EnqueueMessage(LocalTexts.SYSTEM_ONLINE_SUPPRESSION);
-            }
-            else
-            {
-                EnqueueMessage(LocalTexts.SYSTEM_ONLINE_REGULAR);
-            }
-
-            if (isMalkuth)
-            {
-                EnqueueMessage(LocalTexts.MALKUTH_INIT);
-                CreatureUtils.LogWorkMap();
-            }
-
-            if (isYesod)
-            {
-                EnqueueMessage(LocalTexts.YESOD_INIT);
-                if (!isD47)
-                {
-                    animscript.StartCoroutine(CreatureUtils.ClearPixelDelayed(delayTime));
-                    EnqueueMessage(LocalTexts.YESOD_ACTIVATE);
-                }
-            }
-
-            if (isNetzach)
-            {
-                string result = CreatureUtils.TryUnlockRecover(CreatureUtils.StatusType.DayInit);
-                if (result != null) EnqueueMessage(result);
-            }
-
-            if (isHod)
-            {
-                EnqueueMessage(LocalTexts.HOD_INIT);
-            }
-
-
-            yield break;
-        }
-
-        private IEnumerator RemoveInfectionShell()
-        {
-            infectionCounter++;
-            try
-            {
-                yield return CreatureUtils.AgentBatchProcess(CreatureUtils.RemoveInfection);
-            }
-            finally
-            {
-                infectionCounter--;
-            }
-        }
-
+        /// <summary>
+        /// 注册监听器
+        /// </summary>
         private void RegisterNotice()
         {
             Notice.instance.Observe(NoticeName.OnAgentDead, this);
@@ -199,6 +139,9 @@ namespace Creature
             Notice.instance.Observe(NoticeName.OnQliphothOverloadLevelChanged, this);
         }
 
+        /// <summary>
+        /// 注销监听器
+        /// </summary>
         private void DeregisterNotice()
         {
             Notice.instance.Remove(NoticeName.OnAgentDead, this);
@@ -206,6 +149,10 @@ namespace Creature
             Notice.instance.Remove(NoticeName.OnQliphothOverloadLevelChanged, this);
         }
 
+        /// <summary>
+        /// 将需要发送的文本加入队列（利用数组实现）
+        /// </summary>
+        /// <param name="text"></param>
         private void EnqueueMessage(string text)
         {
             if (string.IsNullOrEmpty(text))
@@ -214,13 +161,13 @@ namespace Creature
             }
 
             // 如果队列已满，执行左移操作，丢弃最早的消息（FIFO）
-            if (messageCount >= MAX_MESSAGE_COUNT)
+            if (messageCount >= CreatureTools.MAX_MESSAGE_COUNT)
             {
-                for (int i = 0; i < MAX_MESSAGE_COUNT - 1; i++)
+                for (int i = 0; i < CreatureTools.MAX_MESSAGE_COUNT - 1; i++)
                 {
                     messages[i] = messages[i + 1];
                 }
-                messageCount = MAX_MESSAGE_COUNT - 1;
+                messageCount = CreatureTools.MAX_MESSAGE_COUNT - 1;
             }
 
             messages[messageCount] = text;
@@ -232,6 +179,13 @@ namespace Creature
             }
         }
 
+        #endregion
+
+        #region 迭代器
+        
+        /// <summary>
+        /// 发送文本
+        /// </summary>
         private IEnumerator ProcessMessages()
         {
             if (isProcessingMessages)
@@ -249,11 +203,11 @@ namespace Creature
                     string text = messages[index];
                     if (!string.IsNullOrEmpty(text))
                     {
-                        DialogueUtils.SendMessage(text);
+                        DialogueSendings.SendMessage(text);
                     }
 
                     index++;
-                    yield return new WaitForSeconds(CreatureUtils.DEFAULT_DELAY_TIME);
+                    yield return new WaitForSeconds(CreatureTools.DEFAULT_DELAY_TIME);
                 }
             }
             finally
@@ -264,6 +218,75 @@ namespace Creature
             }
         }
 
+        /// <summary>
+        /// 初始化当日类型，并按此进行后续行动
+        /// </summary>
+        private IEnumerator InitDayTypeConfig(float delayTime)
+        {
+            yield return new WaitForSeconds(delayTime);
+
+            isD47 = (todayType == CreatureTools.DayType.D47);
+            isMalkuth = (todayType == CreatureTools.DayType.MALKUTH) || isD47;
+            isYesod = (todayType == CreatureTools.DayType.YESOD) || isD47;
+            isNetzach = (todayType == CreatureTools.DayType.NETZACH) || isD47;
+            isHod = (todayType == CreatureTools.DayType.HOD) || isD47;
+
+            if (isD47 || isMalkuth || isYesod || isNetzach)
+            {
+                EnqueueMessage(LocalTexts.SYSTEM_ONLINE_SUPPRESSION);
+            }
+            else
+            {
+                EnqueueMessage(LocalTexts.SYSTEM_ONLINE_REGULAR);
+            }
+
+            if (isMalkuth)
+            {
+                EnqueueMessage(LocalTexts.MALKUTH_INIT);
+                CreatureTools.LogWorkMap();
+            }
+
+            if (isYesod)
+            {
+                EnqueueMessage(LocalTexts.YESOD_INIT);
+                if (!isD47)
+                {
+                    animscript.StartCoroutine(CreatureTools.ClearPixelDelayed(delayTime));
+                    EnqueueMessage(LocalTexts.YESOD_ACTIVATE);
+                }
+            }
+
+            if (isNetzach)
+            {
+                string result = CreatureTools.TryUnlockRecover(CreatureTools.StatusType.DayInit);
+                if (result != null) EnqueueMessage(result);
+            }
+
+            if (isHod)
+            {
+                EnqueueMessage(LocalTexts.HOD_INIT);
+            }
+
+
+            yield break;
+        }
+
+        /// <summary>
+        /// 清除感染的计数器外壳
+        /// </summary>
+        private IEnumerator RemoveInfectionShell()
+        {
+            infectionCounter++;
+            try
+            {
+                yield return CreatureTools.AgentBatchProcess(CreatureTools.RemoveInfection, CreatureTools.DEFAULT_BATCH_SIZE);
+            }
+            finally
+            {
+                infectionCounter--;
+            }
+        }
+
         #endregion
 
         #region 字段
@@ -271,7 +294,7 @@ namespace Creature
         public EGODispatcherAnim animscript;
         private readonly Timer infectionTimer = new Timer();
 
-        private CreatureUtils.DayType todayType;
+        private CreatureTools.DayType todayType;
         private CreatureModel[] creatureModels;
 
         private int infectionCounter = 0;
@@ -285,10 +308,8 @@ namespace Creature
         private bool lobTrigger = false;
         private int addings;
         private int lobCounter;
-        private static readonly int LOB_MAX_VALUE = 300;
 
-        private static readonly int MAX_MESSAGE_COUNT = 10;              // 最大消息数量
-        private readonly string[] messages = new string[MAX_MESSAGE_COUNT]; // 消息数组
+        private readonly string[] messages = new string[CreatureTools.MAX_MESSAGE_COUNT]; // 消息数组
         private int messageCount = 0;                         // 当前消息数量
         private bool isProcessingMessages = false;            // 是否正在处理
 

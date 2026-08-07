@@ -1,15 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using Bufs;
-using Utils;
+﻿using System.Collections.Generic;
+using Equipments.Bufs;
+using Equipments.Tools;
 
-namespace Weapons
+namespace Equipments.Core
 {
 	public class WeaponRifle : EquipmentScriptBase
 	{
 		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
-			dmgType = WeaponUtils.GetWeakestDefenseType(target);
+			dmgType = WeaponTools.GetWeakestDefenseType(target);
 			List<DamageInfo> list = new List<DamageInfo>();
 			for (int i = 0; i < 3; i++)
 			{
@@ -24,6 +23,10 @@ namespace Weapons
         }
         public override void OnGiveDamageAfter(UnitModel actor, UnitModel target, DamageInfo dmg)
         {
+            if (target.hp > 0)
+            {
+                target.hp -= 1f;
+            }
             target.AddUnitBuf(new DebufDamageMultiply(false, 2f, 5f));
             base.OnGiveDamageAfter(actor, target, dmg);
         }

@@ -1,10 +1,7 @@
-﻿using System;
-
-namespace Utils
+﻿namespace Equipments.Tools
 {
-    public static class WeaponUtils
+    public static class WeaponTools
     {
-
         #region 方法
 
         /// <summary>

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Bufs
+﻿namespace Equipments.Bufs
 {
     /// <summary>
     /// Debuff，为敌对目标施加一个减速效果。

@@ -50,25 +50,25 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Armors\ArmorUnified.cs" />
-    <Compile Include="Bufs\DebufDamageMultiply.cs" />
-    <Compile Include="Bufs\DebufDotDamage.cs" />
-    <Compile Include="Bufs\DebufSlowDown.cs" />
+    <Compile Include="Equipments\Core\ArmorUnified.cs" />
+    <Compile Include="Equipments\Bufs\DebufDamageMultiply.cs" />
+    <Compile Include="Equipments\Bufs\DebufDotDamage.cs" />
+    <Compile Include="Equipments\Bufs\DebufSlowDown.cs" />
     <Compile Include="Creature\EGODispatcher.cs" />
     <Compile Include="Creature\EGODispatcherAnim.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\AgentList.cs" />
-    <Compile Include="Utils\ArmorUtils.cs" />
-    <Compile Include="Utils\CreatureUtils.cs" />
-    <Compile Include="Utils\DialogueUtils.cs" />
+    <Compile Include="Utils\ActiveAgentManager.cs" />
+    <Compile Include="Equipments\Tools\ArmorTools.cs" />
+    <Compile Include="Creature\CreatureTools.cs" />
+    <Compile Include="Utils\DialogueSendings.cs" />
     <Compile Include="Utils\LocalTexts.cs" />
-    <Compile Include="Utils\LogUtils.cs" />
-    <Compile Include="Utils\WeaponUtils.cs" />
-    <Compile Include="Weapons\WeaponCannon.cs" />
-    <Compile Include="Weapons\WeaponChainsaw.cs" />
-    <Compile Include="Weapons\WeaponPistol.cs" />
-    <Compile Include="Weapons\WeaponRifle.cs" />
-    <Compile Include="Weapons\WeaponShotgun.cs" />
+    <Compile Include="Utils\LogSendings.cs" />
+    <Compile Include="Equipments\Core\WeaponCannon.cs" />
+    <Compile Include="Equipments\Core\WeaponChainsaw.cs" />
+    <Compile Include="Equipments\Core\WeaponPistol.cs" />
+    <Compile Include="Equipments\Core\WeaponRifle.cs" />
+    <Compile Include="Equipments\Core\WeaponShotgun.cs" />
+    <Compile Include="Equipments\Tools\WeaponTools.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

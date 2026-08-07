@@ -1,17 +1,16 @@
-﻿
-using System.Collections.Generic;
-using Bufs;
-using Utils;
+﻿using System.Collections.Generic;
+using Equipments.Bufs;
+using Equipments.Tools;
 
-namespace Weapons
-{
-	public class WeaponPistol : EquipmentScriptBase
+namespace Equipments.Core
+{ 
+    public class WeaponPistol : EquipmentScriptBase
 	{
 		public override WeaponDamageInfo OnAttackStart(UnitModel actor, UnitModel target)
 		{
-            if (WeaponUtils.HasImmuneDefense(target)) {
+            if (WeaponTools.HasImmuneDefense(target)) {
                 overrideDamageType = true;
-                dmgType = WeaponUtils.GetWeakestDefenseType(target);
+                dmgType = WeaponTools.GetWeakestDefenseType(target);
             }
             else {
                 overrideDamageType = false;
