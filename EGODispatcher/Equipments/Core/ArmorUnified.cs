@@ -1,14 +1,14 @@
-namespace Equipments.Tools
+ï»¿namespace Equipments.Tools
 {
     /// <summary>
-    /// »¤¼×ºËĞÄÂß¼­Í³Ò»¹ÜÀí½Å±¾
-    /// 1. ¸ù¾İÔ±¹¤Õ½¶·²ÎÊı£¨CombatMode£©Éè¶¨»Ö¸´µÄÖÜÆÚÓë±ÈÀı£¬Õ½¶·²ÎÊıÓÉ¸ÃÔ±¹¤Ğ¯´øµÄÎäÆ÷ÀàĞÍ¾ö¶¨£»
-    /// 2. ÉúÃüÖµ/¾«ÉñÖµµÍÓÚãĞÖµÊ±ĞŞ¸Ä¶ÔÓ¦µÄÖ¸¶¨ÉËº¦ÀàĞÍµÄ³ĞÉËĞŞÕı±È£»
-    /// 3. ²ÎÕ½/ÊÜ»÷Ê±´¥·¢ÆÁÕÏ¡¢ÒÆËÙ¼Ó³ÉµÈ»¤¼×ÌØÓĞĞ§¹û£»
+    /// æŠ¤ç”²æ ¸å¿ƒé€»è¾‘ç»Ÿä¸€ç®¡ç†è„šæœ¬
+    /// 1. æ ¹æ®å‘˜å·¥æˆ˜æ–—å‚æ•°ï¼ˆCombatModeï¼‰è®¾å®šæ¢å¤çš„å‘¨æœŸä¸æ¯”ä¾‹ï¼Œæˆ˜æ–—å‚æ•°ç”±è¯¥å‘˜å·¥æºå¸¦çš„æ­¦å™¨ç±»å‹å†³å®šï¼›
+    /// 2. ç”Ÿå‘½å€¼/ç²¾ç¥å€¼ä½äºé˜ˆå€¼æ—¶ä¿®æ”¹å¯¹åº”çš„æŒ‡å®šä¼¤å®³ç±»å‹çš„æ‰¿ä¼¤ä¿®æ­£æ¯”ï¼›
+    /// 3. å‚æˆ˜/å—å‡»æ—¶è§¦å‘å±éšœã€ç§»é€ŸåŠ æˆç­‰æŠ¤ç”²ç‰¹æœ‰æ•ˆæœï¼›
     /// </summary>
     public class ArmorUnified : EquipmentScriptBase
     {
-        #region ¹³×Ó
+        #region é’©å­
         public override void OnStageStart()
         {
             base.OnStageStart();
@@ -21,7 +21,7 @@ namespace Equipments.Tools
         public override void OnFixedUpdate()
         {
             base.OnFixedUpdate();
-            // ¼ÆÊ±Æ÷Î´Æô¶¯ / Î´µ½Ö´ĞĞÖÜÆÚ ¡ú Ìø¹ı±¾´Î»Ö¸´Âß¼­
+            // è®¡æ—¶å™¨æœªå¯åŠ¨ / æœªåˆ°æ‰§è¡Œå‘¨æœŸ â†’ è·³è¿‡æœ¬æ¬¡æ¢å¤é€»è¾‘
             if (!HealTimer.started || !HealTimer.RunTimer())
             {
                 return;
@@ -44,7 +44,7 @@ namespace Equipments.Tools
             HealTimer.StartTimer(timerInterval);
         }
 
-        public override DefenseInfo GetDefense(UnitModel actor) // ÕâÀïµÄDefenceÆäÊµÓ¦¸ÃÀí½âÎª³ĞÉËĞŞÕı±È
+        public override DefenseInfo GetDefense(UnitModel actor) // è¿™é‡Œçš„Defenceå…¶å®åº”è¯¥ç†è§£ä¸ºæ‰¿ä¼¤ä¿®æ­£æ¯”
         {
             DefenseInfo defenseInfo = base.GetDefense(actor).Copy();
 
@@ -53,12 +53,12 @@ namespace Equipments.Tools
 
             if (actor.hp < hpMark)
             {
-                defenseInfo.R = 0f; // ÃâÒß
+                defenseInfo.R = 0f; // å…ç–«
                 defenseInfo.P = 0f;
             }
             if (actor.mental < mpMark)
             {
-                defenseInfo.W = -0.1f; // ÒÔ10%ÎüÊÕ
+                defenseInfo.W = -0.1f; // ä»¥10%å¸æ”¶
                 defenseInfo.B = -0.1f;
             }
 
@@ -95,10 +95,10 @@ namespace Equipments.Tools
         }
         #endregion
 
-        #region Ë½ÓĞ¹¤¾ß·½·¨
+        #region ç§æœ‰å·¥å…·æ–¹æ³•
 
         /// <summary>
-        /// ¶ÁÈ¡Õ½¶·²ÎÊı£¬Éè¶¨»Ö¸´ÖÜÆÚÓë±ÈÀı
+        /// è¯»å–æˆ˜æ–—å‚æ•°ï¼Œè®¾å®šæ¢å¤å‘¨æœŸä¸æ¯”ä¾‹
         /// </summary>
         private void SetCombatParams(WorkerModel worker)
         {
@@ -108,7 +108,7 @@ namespace Equipments.Tools
         }
 
         /// <summary>
-        /// ´´½¨¼ÓËÙbuf
+        /// åˆ›å»ºåŠ é€Ÿbuf
         /// </summary>
         private UnitStatBuf CreateSpeedBuf(float duration, float value)
         {
@@ -120,21 +120,21 @@ namespace Equipments.Tools
         }
         #endregion
 
-        #region Ë½ÓĞ×Ö¶Î
-        // µ¥Î»£ºÃë£»ÖµÓÉµ±Ç° CombatMode ¾ö¶¨
+        #region ç§æœ‰å­—æ®µ
+        // å•ä½ï¼šç§’ï¼›å€¼ç”±å½“å‰ CombatMode å†³å®š
         private float timerInterval;
 
-        // µÍÓÚ´ËãĞÖµÊ±ĞŞ¸Ä·ÀÓù¿¹ĞÔ£¬¼ÆËã·½Ê½£ºmaxHp * DEFENSE_MARK_RATIO
+        // ä½äºæ­¤é˜ˆå€¼æ—¶ä¿®æ”¹é˜²å¾¡æŠ—æ€§ï¼Œè®¡ç®—æ–¹å¼ï¼šmaxHp * DEFENSE_MARK_RATIO
         private float hpMark;
         private float mpMark;
 
         private readonly Timer HealTimer = new Timer();
 
-        // µ±Ç°Õ½¶·ÖĞµÄÔ±¹¤¼°ÆäËùÊôµ¥Î»
+        // å½“å‰æˆ˜æ–—ä¸­çš„å‘˜å·¥åŠå…¶æ‰€å±å•ä½
         private WorkerModel worker;
         private UnitModel owner;
 
-        // µ±Ç°Ä£Ê½£¬ÓÃÓÚÆ¥Åä»Ö¸´²ÎÊı
+        // å½“å‰æ¨¡å¼ï¼Œç”¨äºåŒ¹é…æ¢å¤å‚æ•°
         private ArmorTools.CombatMode currentMode;
         #endregion
     }
