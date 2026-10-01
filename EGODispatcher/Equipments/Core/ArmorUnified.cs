@@ -1,4 +1,6 @@
-﻿namespace Equipments.Tools
+﻿using Equipments.Tools;
+
+namespace Equipments.Core
 {
     /// <summary>
     /// 护甲核心逻辑统一管理脚本
